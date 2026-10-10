@@ -1,0 +1,1289 @@
+<!doctype html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="theme-color" content="#ffffff">
+<meta name="color-scheme" content="light">
+<title>월급 루틴</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js" defer></script>
+<style>
+:root{
+  --bg:#ffffff;--text:#191F28;--sub:#6B7684;--faint:#8B95A1;--line:#E5E8EB;--soft:#F2F4F6;--soft2:#F9FAFB;
+  --blue:#3182F6;--blue-soft:#E8F3FF;--red:#F04452;--red-soft:#FFEEEE;--green:#00A877;--green-soft:#E5F8F1;--yellow:#FFB800;
+  --r:16px;--hh:100px;
+}
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%;background:#fff}
+body{margin:0;background:#fff;color:var(--text);font-family:'Pretendard',-apple-system,BlinkMacSystemFont,system-ui,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;font-size:15px;line-height:1.5;-webkit-font-smoothing:antialiased;word-break:keep-all;overflow-x:hidden}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer;-webkit-tap-highlight-color:transparent}
+h2,h3{margin:0}
+small{font-size:12px}
+
+/* Header */
+.top{position:sticky;top:0;z-index:30;background:rgba(255,255,255,.97);backdrop-filter:blur(10px);-webkit-backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+.top-in{max-width:760px;margin:0 auto;padding:12px 16px 4px;display:flex;align-items:center;justify-content:space-between;gap:12px}
+.brand{display:flex;align-items:baseline;gap:6px;min-width:0}
+.brand h1{font-size:19px;margin:0;font-weight:800;letter-spacing:-.03em;white-space:nowrap}
+.ver{font-size:11px;color:var(--faint);font-weight:600}
+.stamp{display:flex;align-items:center;gap:6px;color:var(--sub);text-align:right}
+.stamp .dot{width:7px;height:7px;border-radius:50%;background:var(--green);flex:none}
+.stamp.saving .dot{background:var(--yellow)}
+.stamp.error .dot{background:var(--red)}
+.stamp.error{color:var(--red)}
+.stamp .st{display:flex;flex-direction:column;line-height:1.25}
+.stamp small{font-size:10.5px;color:var(--faint);font-weight:600}
+.stamp b{font-size:12px;font-weight:600;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tabs{max-width:760px;margin:0 auto;display:flex;gap:2px;overflow-x:auto;padding:0 8px;scrollbar-width:none}
+.tabs::-webkit-scrollbar{display:none}
+.tabs button{flex:none;background:none;border:0;padding:10px 9px 11px;font-size:15px;font-weight:600;color:var(--faint);border-bottom:2.5px solid transparent;white-space:nowrap}
+.tabs button.on{color:var(--text);border-color:var(--text)}
+
+main{max-width:760px;margin:0 auto;padding:18px 16px 40px}
+footer{max-width:760px;margin:0 auto;padding:8px 16px 40px;color:var(--faint);font-size:12px;text-align:center}
+
+/* Section */
+.sec-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:2px 0 14px}
+.sec-head h2{font-size:23px;font-weight:800;letter-spacing:-.03em}
+.list-head{display:flex;justify-content:space-between;align-items:center;gap:8px;margin:20px 2px 10px}
+.list-head h3{font-size:17px;font-weight:700}
+.list-head h3 small{color:var(--faint);font-weight:600;margin-left:4px}
+
+.card{background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:16px;margin-bottom:12px}
+.card h3{font-size:16px;font-weight:700;margin-bottom:10px}
+.card.pad0{padding:0 16px}
+.card.note{background:var(--blue-soft);border-color:transparent;color:#1B64DA;font-size:14px}
+.card.note b{display:block;color:var(--text);margin-bottom:2px}
+.card.danger-zone{border-color:#FFD6D9}
+.lbl{display:block;font-size:13px;font-weight:600;color:var(--sub);margin:0 0 6px}
+.lbl.mt{margin-top:14px}
+.hint{font-size:13px;color:var(--faint);margin-top:6px}
+.hint .neg,.neg{color:var(--red)}
+.pos{color:var(--green)}
+.faint{color:var(--faint)}
+.empty{padding:22px 4px;text-align:center;color:var(--faint);font-size:14px}
+
+/* Buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:6px;border:0;border-radius:12px;padding:12px 16px;font-weight:700;font-size:15px;background:var(--soft);color:var(--text);transition:filter .15s,background .15s;white-space:nowrap}
+.btn:active{filter:brightness(.95)}
+.btn.primary{background:var(--blue);color:#fff}
+.btn.danger{background:var(--red);color:#fff}
+.btn.ghost{background:var(--soft)}
+.btn.dashed{background:#fff;border:1.5px dashed #D1D6DB;color:var(--sub)}
+.btn.sm{padding:8px 12px;font-size:13.5px;border-radius:10px}
+.btn.block{width:100%}
+.btn.danger-text{color:var(--red);background:transparent}
+.btn svg{width:17px;height:17px;flex:none}
+.btn-row{display:flex;gap:8px;flex-wrap:wrap;margin:10px 0 12px}
+.btn-row .btn{flex:1 1 140px}
+.link{background:none;border:0;padding:0;color:var(--blue);font-weight:700;font-size:13px}
+.ib{width:32px;height:32px;border:0;background:transparent;border-radius:9px;display:inline-grid;place-items:center;color:var(--faint);flex:none}
+.ib:hover{background:var(--soft);color:var(--text)}
+.ib.danger:hover{color:var(--red);background:var(--red-soft)}
+.ib:disabled{opacity:.28;pointer-events:none}
+.ib.on{color:var(--blue);background:var(--blue-soft)}
+.ib svg{width:18px;height:18px}
+.row-acts{display:flex;align-items:center;justify-content:flex-end}
+
+/* Inputs */
+.minput{display:flex;align-items:center;background:var(--soft);border-radius:12px;padding:0 12px;border:1.5px solid transparent;transition:border-color .15s,background .15s;min-width:0}
+.minput:focus-within{border-color:var(--blue);background:#fff}
+.minput input{flex:1;min-width:0;width:100%;border:0;background:transparent;padding:10px 0;text-align:right;font-weight:700;font-variant-numeric:tabular-nums;outline:none;font-size:16px}
+.minput span{margin-left:4px;color:var(--sub);font-weight:600;font-size:14px;flex:none}
+.minput.xl input{font-size:26px;padding:10px 0;letter-spacing:-.02em}
+.minput.xl span{font-size:18px}
+.txt{width:100%;min-width:0;border:1.5px solid transparent;background:var(--soft);border-radius:12px;padding:10px 12px;outline:none;font-size:16px;transition:border-color .15s,background .15s}
+.txt:focus{border-color:var(--blue);background:#fff}
+textarea.txt{resize:vertical;line-height:1.5}
+select.txt,.sortsel{appearance:none;-webkit-appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%238B95A1' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;background-size:14px;padding-right:30px}
+.sortsel{border:1px solid var(--line);background-color:#fff;border-radius:10px;padding:7px 28px 7px 10px;font-size:13.5px;font-weight:600;color:var(--sub);outline:none}
+.pinput{display:flex;align-items:center;background:var(--soft);border-radius:12px;padding:0 10px;border:1.5px solid transparent;min-width:0}
+.pinput:focus-within{border-color:var(--blue);background:#fff}
+.pinput input{width:100%;min-width:0;border:0;background:transparent;padding:10px 0;text-align:right;font-weight:700;outline:none;font-size:16px}
+.pinput span{margin-left:3px;color:var(--sub);font-weight:600}
+.chk{display:flex;align-items:center;gap:8px;font-size:14px;font-weight:600;color:var(--sub);cursor:pointer}
+.chk input{width:18px;height:18px;accent-color:var(--blue);margin:0}
+.seg{display:flex;background:var(--soft);border-radius:12px;padding:3px;gap:3px}
+.seg button{flex:1;border:0;background:transparent;border-radius:9px;padding:8px 10px;font-weight:700;font-size:14px;color:var(--faint)}
+.seg button.on{background:#fff;color:var(--text);box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+@media(max-width:420px){.grid2{grid-template-columns:1fr}}
+
+/* Summary */
+.sticky-sum{position:sticky;top:calc(var(--hh) + 8px);z-index:10;box-shadow:0 6px 16px rgba(0,0,0,.05)}
+.sumrow{display:grid;grid-template-columns:repeat(3,1fr);gap:8px}
+.sumrow div{min-width:0}
+.sumrow span{display:block;font-size:12px;color:var(--faint);font-weight:600}
+.sumrow b{display:block;font-size:15.5px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.bar{display:flex;height:12px;border-radius:99px;overflow:hidden;background:var(--soft);margin-top:12px}
+.bar i{display:block;height:100%}
+.bar i.rest{background:#E5E8EB}
+.legend{display:flex;flex-wrap:wrap;gap:4px 12px;list-style:none;padding:0;margin:10px 0 0;font-size:12.5px;color:var(--sub)}
+.legend li{display:flex;align-items:center;gap:5px}
+.legend em{width:8px;height:8px;border-radius:50%;display:inline-block}
+.legend b{color:var(--text);font-weight:700}
+.warn{margin-top:10px;font-size:13px;font-weight:600;color:var(--red);background:var(--red-soft);border-radius:10px;padding:8px 10px}
+.okmsg{margin-top:10px;font-size:13px;font-weight:600;color:var(--green);background:var(--green-soft);border-radius:10px;padding:8px 10px}
+
+/* Category */
+.cat{border-left:4px solid var(--c)}
+.cat-head{display:flex;align-items:center;gap:6px}
+.swatch{-webkit-appearance:none;appearance:none;width:24px;height:24px;border:0;padding:0;border-radius:50%;background:none;cursor:pointer;flex:none}
+.swatch::-webkit-color-swatch-wrapper{padding:0}
+.swatch::-webkit-color-swatch{border:none;border-radius:50%}
+.swatch::-moz-color-swatch{border:none;border-radius:50%}
+.name-in{flex:1;min-width:0;border:1.5px solid transparent;background:transparent;border-radius:10px;padding:6px 8px;font-size:17px;font-weight:800;outline:none;letter-spacing:-.02em}
+.name-in:hover{background:var(--soft2)}
+.name-in:focus{border-color:var(--blue);background:#fff}
+.cat-acts{display:flex;flex:none}
+.cat-opts{display:flex;flex-direction:column;gap:10px;background:var(--soft2);border-radius:12px;padding:12px;margin:10px 0 2px}
+.single{margin-top:10px}
+.items{margin-top:6px}
+.item{display:grid;grid-template-columns:1fr auto;grid-template-areas:"n a" "m m";gap:6px;padding:10px 0;border-top:1px solid var(--soft)}
+.item:first-child{border-top:0}
+.item .txt{grid-area:n}.item .minput{grid-area:m}.item .row-acts{grid-area:a}
+@media(min-width:560px){.item{grid-template-columns:1.2fr 1fr auto;grid-template-areas:"n m a"}}
+.items-foot{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:6px}
+.cat-foot{display:flex;justify-content:space-between;align-items:center;margin-top:12px;padding-top:12px;border-top:1px solid var(--line);font-size:13px;color:var(--faint)}
+.cat-foot b{font-size:17px;color:var(--text);font-weight:800;font-variant-numeric:tabular-nums}
+.cat-foot small{font-weight:700;color:var(--sub);margin-left:4px}
+.tag{font-style:normal;background:var(--blue-soft);color:var(--blue);border-radius:6px;padding:2px 6px;font-size:11.5px;font-weight:700;margin-right:6px}
+
+/* Rule */
+.rule{display:grid;grid-template-columns:1fr 92px auto;grid-template-areas:"n p a" "m m m";gap:6px 8px;align-items:center;padding:12px 0;border-top:1px solid var(--soft)}
+.rule:first-child{border-top:0}
+.rule .rname{grid-area:n;display:flex;align-items:center;gap:8px;min-width:0}
+.rule .rname em{width:10px;height:10px;border-radius:50%;flex:none}
+.rule .pinput{grid-area:p}.rule .row-acts{grid-area:a}
+.rule .ramt{grid-area:m;text-align:right;font-weight:800;font-size:16px;font-variant-numeric:tabular-nums}
+@media(min-width:560px){.rule{grid-template-columns:1fr 96px 150px auto;grid-template-areas:"n p m a"}}
+
+/* Entry */
+.entry{display:grid;grid-template-columns:1fr 1fr auto;grid-template-areas:"c n a" "m m m" "o o o";gap:6px;padding:12px 0 12px 10px;border-top:1px solid var(--soft);position:relative}
+.entry::before{content:"";position:absolute;left:0;top:14px;bottom:14px;width:3px;border-radius:3px;background:var(--c)}
+.entry:first-child{border-top:0}
+.entry .ecat{grid-area:c}.entry .ename{grid-area:n}.entry .minput{grid-area:m}.entry .ememo{grid-area:o;font-size:14px;padding:8px 12px}.entry .row-acts{grid-area:a}
+@media(min-width:620px){.entry{grid-template-columns:120px 1fr 150px 1fr auto;grid-template-areas:"c n m o a"}.entry .ememo{font-size:16px;padding:10px 12px}}
+
+/* Dashboard */
+.hero .eyebrow,.eyebrow{font-size:13px;font-weight:700;color:var(--blue)}
+.hero-num{font-size:32px;font-weight:800;letter-spacing:-.03em;font-variant-numeric:tabular-nums;margin-top:2px;line-height:1.2}
+.hero .sub,.sub{font-size:13px;color:var(--faint)}
+.stats3{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:16px 0 4px}
+.stats3 div{background:var(--soft2);border-radius:12px;padding:10px;min-width:0}
+.stats3 span{display:block;font-size:11.5px;color:var(--faint);font-weight:600}
+.stats3 b{display:block;font-size:14.5px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.prog{margin:14px 0}
+.prog-top{display:flex;justify-content:space-between;font-size:12.5px;color:var(--sub);font-weight:600;margin-bottom:6px}
+.prog .track{height:8px;background:var(--soft);border-radius:99px;overflow:hidden}
+.prog .fill{height:100%;background:var(--blue);border-radius:99px}
+.prog .fill.over{background:var(--red)}
+.chart{width:100%;height:auto;display:block;margin-top:6px}
+.kv4{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:12px}
+.kv4 div{background:var(--soft2);border-radius:12px;padding:10px 12px;min-width:0}
+.kv4 span{display:block;font-size:12px;color:var(--faint);font-weight:600}
+.kv4 b{display:block;font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.steps{margin:8px 0 14px;padding-left:20px;color:var(--sub);font-size:14px}
+.steps li{margin:4px 0}
+
+/* Projection */
+.ycards{display:grid;grid-template-columns:1fr;gap:10px;margin-bottom:12px}
+@media(min-width:620px){.ycards{grid-template-columns:repeat(3,1fr)}}
+.ycard{border:1px solid var(--line);border-radius:var(--r);padding:14px 16px;display:grid;grid-template-columns:auto 1fr;gap:2px 10px;align-items:center}
+@media(min-width:620px){.ycard{display:block}}
+.ylabel{font-size:14px;font-weight:800}
+.ylabel small{display:block;font-size:11.5px;color:var(--faint);font-weight:600}
+.yright{text-align:right}
+@media(min-width:620px){.yright{text-align:left;margin-top:8px}}
+.ytotal{font-size:21px;font-weight:800;color:var(--blue);font-variant-numeric:tabular-nums;letter-spacing:-.02em}
+.ykor{font-size:12px;color:var(--sub);font-weight:600}
+.ysplit{font-size:12px;color:var(--faint);margin-top:4px}
+.chips{display:flex;flex-wrap:wrap;gap:6px}
+.chip{display:inline-flex;align-items:center;gap:6px;border:1px solid var(--line);border-radius:99px;padding:6px 12px;font-size:14px;font-weight:600;cursor:pointer}
+.chip input{accent-color:var(--blue);margin:0;width:16px;height:16px}
+
+/* Table */
+.tbl{width:100%;border-collapse:collapse;font-size:14px}
+.tbl th{font-size:12px;color:var(--faint);font-weight:600;text-align:left;padding:6px 4px;border-bottom:1px solid var(--line)}
+.tbl td{padding:9px 4px;border-bottom:1px solid var(--soft);vertical-align:middle}
+.tbl .n{text-align:right;font-variant-numeric:tabular-nums;white-space:nowrap}
+.tbl tfoot td{font-weight:800;border-bottom:0;border-top:1.5px solid var(--line)}
+.tbl em{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.scroll-x{overflow-x:auto;-webkit-overflow-scrolling:touch}
+
+/* Months */
+.yearnav,.mnav{display:flex;align-items:center;justify-content:center;gap:10px;margin:0 0 14px}
+.yearnav b,.mnav b{font-size:18px;font-weight:800;min-width:110px;text-align:center}
+.mgrid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px}
+@media(min-width:620px){.mgrid{grid-template-columns:repeat(3,1fr)}}
+.mcard{text-align:left;background:#fff;border:1px solid var(--line);border-radius:var(--r);padding:12px 14px;display:flex;flex-direction:column;gap:3px;transition:border-color .15s}
+.mcard:hover{border-color:#C9CFD6}
+.mcard.cur{border:2px solid var(--blue);padding:11px 13px}
+.mcard.has{background:var(--soft2)}
+.mtop{display:flex;justify-content:space-between;align-items:center;margin-bottom:4px}
+.mtop b{font-size:17px;font-weight:800}
+.chipok{font-size:11px;font-weight:700;color:var(--blue);background:var(--blue-soft);border-radius:6px;padding:2px 6px}
+.chipno{font-size:11px;font-weight:600;color:var(--faint)}
+.mrow{display:flex;justify-content:space-between;font-size:12.5px;color:var(--faint);gap:6px}
+.mrow b{color:var(--text);font-weight:700;font-variant-numeric:tabular-nums;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.detail-top{display:flex;align-items:center;justify-content:space-between;gap:6px;margin-bottom:6px}
+.detail-top .mnav{margin:0;gap:2px}
+.detail-top .mnav b{min-width:0;font-size:17px;padding:0 4px}
+
+/* Settings */
+.set-row{display:flex;justify-content:space-between;align-items:center;gap:10px;padding:10px 0;border-top:1px solid var(--soft)}
+.set-row:first-of-type{border-top:0}
+.set-row p{margin:0;font-size:13px;color:var(--faint)}
+.set-row b{font-size:15px}
+.pdf-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.changelog{margin:0;padding:0;list-style:none}
+.changelog li{padding:8px 0;border-top:1px solid var(--soft);font-size:13.5px}
+.changelog li:first-child{border-top:0}
+.changelog b{font-size:14px}
+.changelog ul{margin:4px 0 0;padding-left:18px;color:var(--sub)}
+
+/* Modal + toast */
+.mback{position:fixed;inset:0;background:rgba(0,0,0,.4);display:flex;align-items:flex-end;justify-content:center;z-index:100;opacity:0;transition:opacity .15s;padding:12px}
+.mback.show{opacity:1}
+.modal{background:#fff;border-radius:22px;width:100%;max-width:420px;padding:22px 20px 16px;transform:translateY(16px);transition:transform .18s;max-height:85vh;overflow:auto}
+.mback.show .modal{transform:none}
+@media(min-width:560px){.mback{align-items:center}}
+.modal h3{font-size:19px;font-weight:800;margin-bottom:8px;letter-spacing:-.02em}
+.modal p{margin:0 0 8px;color:var(--sub);font-size:14.5px}
+.mbtns{display:flex;gap:8px;margin-top:16px}
+.mbtns .btn{flex:1}
+.mbtns.col{flex-direction:column}
+#toast{position:fixed;left:50%;bottom:24px;transform:translate(-50%,20px);background:#191F28;color:#fff;padding:11px 18px;border-radius:12px;font-size:14px;font-weight:600;opacity:0;pointer-events:none;transition:.2s;z-index:120;white-space:nowrap;max-width:92vw;overflow:hidden;text-overflow:ellipsis}
+#toast.show{opacity:1;transform:translate(-50%,0)}
+</style>
+</head>
+<body>
+<header class="top" id="top">
+  <div class="top-in">
+    <div class="brand"><h1>월급 루틴</h1><span class="ver" id="verBadge"></span></div>
+    <div class="stamp" id="stamp" title="이 브라우저에 실시간 자동저장돼요"><span class="dot"></span><span class="st"><small id="stampLbl">자동저장</small><b id="stampTime">-</b></span></div>
+  </div>
+  <nav class="tabs" id="tabs">
+    <button type="button" data-tab="dash">현황</button>
+    <button type="button" data-tab="plan">월급 배분</button>
+    <button type="button" data-tab="guide">비율 가이드</button>
+    <button type="button" data-tab="proj">저축 전망</button>
+    <button type="button" data-tab="month">월별 기록</button>
+    <button type="button" data-tab="set">데이터</button>
+  </nav>
+</header>
+<main id="view"><noscript>자바스크립트를 켜야 사용할 수 있어요.</noscript></main>
+<footer>월급 루틴 <span id="footVer"></span> · 데이터는 이 브라우저에 자동 저장돼요</footer>
+<input type="file" id="importFile" accept=".json,application/json" hidden>
+<div id="modalRoot"></div>
+<div id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(() => {
+'use strict';
+
+/* ===== 버전 =====
+   업데이트할 때 APP_VERSION을 올리고 CHANGELOG 맨 위에 내용을 추가하세요.
+   GitHub Pages에 올리면 열려 있는 앱이 새 버전을 감지해 팝업으로 알려줘요. */
+const APP_VERSION = '1.0.0';
+const CHANGELOG = [
+  { v: '1.0.0', date: '2026-10-10', notes: [
+    '월급 배분: 카테고리·항목 추가/수정/삭제/정렬, 합계 자동 계산',
+    '비율 가이드: 저축 40% · 비상금 5% · 문화생활 5% · 생활비 50% (비율 수정 가능)',
+    '저축 전망: 1년 · 2년 · 3년 후 모이는 금액',
+    '월별 기록: 1~12월 실제 기록 저장, 계획 대비 비교',
+    '현황 대시보드, JSON 가져오기/내보내기, PDF 내보내기, 실시간 자동저장'
+  ]}
+];
+
+const STORE_KEY = 'salaryRoutine.data.v1';
+const VIEW_KEY = 'salaryRoutine.view';
+const VER_KEY = 'salaryRoutine.lastVersion';
+const FONT_URL = 'https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard-dynamic-subset.min.css';
+const PALETTE = ['#3182F6','#00B386','#F04452','#FFB800','#8B5CF6','#FF7A45','#14B8A6','#64748B','#EC4899','#84CC16'];
+const TABS = ['dash','plan','guide','proj','month','set'];
+const DAYS = ['일','월','화','수','목','금','토'];
+
+const $ = s => document.querySelector(s);
+const uid = () => Math.random().toString(36).slice(2, 8) + Date.now().toString(36).slice(-5);
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const money = v => { const n = Number(String(v ?? '').replace(/[^\d]/g, '')); return Number.isFinite(n) ? n : 0; };
+const num = v => { const n = parseFloat(String(v ?? '').replace(/[^\d.]/g, '')); return Number.isFinite(n) ? n : 0; };
+const fmtN = n => Math.round(n || 0).toLocaleString('ko-KR');
+const won = n => fmtN(n) + '원';
+const signWon = n => `<span class="${n < 0 ? 'neg' : ''}">${won(n)}</span>`;
+const pct = x => (Math.round(x * 10) / 10) + '%';
+const pad = n => String(n).padStart(2, '0');
+function kor(n){
+  n = Math.round(n || 0); if (!n) return '0원';
+  const neg = n < 0; n = Math.abs(n);
+  const eok = Math.floor(n / 1e8), man = Math.floor((n % 1e8) / 1e4), rest = n % 1e4;
+  const s = [];
+  if (eok) s.push(eok.toLocaleString('ko-KR') + '억');
+  if (man) s.push(man.toLocaleString('ko-KR') + '만');
+  if (rest) s.push(rest.toLocaleString('ko-KR'));
+  return (neg ? '-' : '') + s.join(' ') + '원';
+}
+function kshort(n){
+  if (n >= 1e8) return (Math.round(n / 1e7) / 10) + '억';
+  return Math.round(n / 1e4).toLocaleString('ko-KR') + '만';
+}
+function fmtDateTime(iso, withDay = true){
+  if (!iso) return '-';
+  const d = new Date(iso);
+  return `${d.getFullYear()}.${pad(d.getMonth()+1)}.${pad(d.getDate())}${withDay ? ` (${DAYS[d.getDay()]})` : ''} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`;
+}
+function stampFile(){ const d = new Date(); return `${d.getFullYear()}-${pad(d.getMonth()+1)}-${pad(d.getDate())}_${pad(d.getHours())}${pad(d.getMinutes())}`; }
+function cmpVer(a, b){
+  const pa = String(a).split('.').map(Number), pb = String(b).split('.').map(Number);
+  for (let i = 0; i < Math.max(pa.length, pb.length); i++){ const d = (pa[i] || 0) - (pb[i] || 0); if (d) return d > 0 ? 1 : -1; }
+  return 0;
+}
+
+/* ===== 상태 ===== */
+function defaultRules(){
+  return [
+    { id: uid(), name: '저축', percent: 40 },
+    { id: uid(), name: '비상금', percent: 5 },
+    { id: uid(), name: '문화생활', percent: 5 },
+    { id: uid(), name: '생활비', percent: 50 }
+  ];
+}
+function defaultState(){
+  const it = name => ({ id: uid(), name, amount: 0 });
+  return {
+    salary: 0,
+    categories: [
+      { id: uid(), name: '저축', color: PALETTE[0], type: 'multi', amount: 0, isSaving: true, items: [it('적금'), it('주택청약')] },
+      { id: uid(), name: '생활비', color: PALETTE[1], type: 'single', amount: 0, isSaving: false, items: [] },
+      { id: uid(), name: '대출금', color: PALETTE[2], type: 'multi', amount: 0, isSaving: false, items: [it('학자금대출')] },
+      { id: uid(), name: '비상금', color: PALETTE[3], type: 'single', amount: 0, isSaving: false, items: [] },
+      { id: uid(), name: '고정지출', color: PALETTE[4], type: 'multi', amount: 0, isSaving: false, items: [it('통신비'), it('보험료'), it('구독료')] }
+    ],
+    rules: defaultRules(),
+    guideSalary: null,
+    projection: { startBalance: 0, rate: 0, basis: 'plan' },
+    records: {},
+    updatedAt: null
+  };
+}
+function migrate(d){
+  const def = defaultState();
+  d = d && typeof d === 'object' ? d : {};
+  const items = arr => (Array.isArray(arr) ? arr : []).map(i => ({ id: i.id || uid(), name: String(i.name ?? ''), amount: money(i.amount) }));
+  const records = {};
+  Object.entries(d.records || {}).forEach(([y, months]) => {
+    records[y] = {};
+    Object.entries(months || {}).forEach(([m, md]) => {
+      records[y][m] = {
+        salary: money(md?.salary),
+        memo: String(md?.memo ?? ''),
+        entries: (Array.isArray(md?.entries) ? md.entries : []).map(e => ({ id: e.id || uid(), catId: e.catId || null, name: String(e.name ?? ''), amount: money(e.amount), memo: String(e.memo ?? '') }))
+      };
+    });
+  });
+  return {
+    salary: money(d.salary),
+    categories: Array.isArray(d.categories) ? d.categories.map((c, i) => ({
+      id: c.id || uid(), name: String(c.name ?? ''), color: /^#[0-9a-f]{6}$/i.test(c.color) ? c.color : PALETTE[i % PALETTE.length],
+      type: c.type === 'multi' ? 'multi' : 'single', amount: money(c.amount), isSaving: !!c.isSaving, items: items(c.items)
+    })) : def.categories,
+    rules: Array.isArray(d.rules) ? d.rules.map(r => ({ id: r.id || uid(), name: String(r.name ?? ''), percent: num(r.percent) })) : def.rules,
+    guideSalary: d.guideSalary == null || d.guideSalary === '' ? null : money(d.guideSalary),
+    projection: { ...def.projection, ...(d.projection || {}), startBalance: money(d.projection?.startBalance), rate: num(d.projection?.rate) },
+    records,
+    updatedAt: d.updatedAt || null
+  };
+}
+let firstRun = false;
+function load(){
+  try { const raw = localStorage.getItem(STORE_KEY); if (raw) return migrate(JSON.parse(raw)); } catch (e) {}
+  firstRun = true;
+  return defaultState();
+}
+let state = load();
+
+function loadView(){
+  const now = new Date();
+  const def = { tab: 'dash', year: now.getFullYear(), month: null };
+  try { const v = { ...def, ...JSON.parse(localStorage.getItem(VIEW_KEY) || '{}') }; if (!TABS.includes(v.tab)) v.tab = 'dash'; return v; } catch (e) { return def; }
+}
+let view = loadView();
+function saveView(){ try { localStorage.setItem(VIEW_KEY, JSON.stringify(view)); } catch (e) {} }
+const ui = { openOpts: new Set() };
+
+/* ===== 자동저장 ===== */
+let saveTimer = null;
+function touch(){ setStamp('saving'); clearTimeout(saveTimer); saveTimer = setTimeout(saveNow, 300); updateDerived(); }
+function saveNow(){
+  clearTimeout(saveTimer); saveTimer = null;
+  state.updatedAt = new Date().toISOString();
+  try { localStorage.setItem(STORE_KEY, JSON.stringify(state)); setStamp('saved'); }
+  catch (e) { setStamp('error'); }
+}
+function flush(){ if (saveTimer) saveNow(); }
+function setStamp(mode){
+  const el = $('#stamp'); el.className = 'stamp ' + mode;
+  if (mode === 'saving') $('#stampLbl').textContent = '저장 중…';
+  else if (mode === 'error') { $('#stampLbl').textContent = '저장 실패'; $('#stampTime').textContent = '백업해 주세요'; }
+  else { $('#stampLbl').textContent = '자동저장'; $('#stampTime').textContent = state.updatedAt ? fmtDateTime(state.updatedAt, false) : '저장 전'; }
+  document.querySelectorAll('[data-out="lastSaved"]').forEach(e => { e.innerHTML = OUT.lastSaved(); });
+}
+
+/* ===== 계산 ===== */
+const cat = id => state.categories.find(c => c.id === id);
+const rule = id => state.rules.find(r => r.id === id);
+const item = (cid, iid) => cat(cid)?.items.find(i => i.id === iid);
+const sum = arr => arr.reduce((a, x) => a + (x.amount || 0), 0);
+const catTotal = c => !c ? 0 : c.type === 'multi' ? sum(c.items) : (c.amount || 0);
+const planTotal = () => state.categories.reduce((a, c) => a + catTotal(c), 0);
+const planSaving = () => state.categories.filter(c => c.isSaving).reduce((a, c) => a + catTotal(c), 0);
+function getMonth(y, m){ const Y = state.records[y] || (state.records[y] = {}); return Y[m] || (Y[m] = { salary: 0, entries: [], memo: '' }); }
+const peekMonth = (y, m) => state.records[y]?.[m] || null;
+const curMonth = () => getMonth(view.year, view.month);
+const entry = id => curMonth().entries.find(e => e.id === id);
+const hasData = md => !!md && (md.salary > 0 || md.entries.length > 0);
+const monthTotal = md => md ? sum(md.entries) : 0;
+const monthSaving = md => md ? md.entries.filter(e => cat(e.catId)?.isSaving).reduce((a, e) => a + e.amount, 0) : 0;
+function yearSummary(y){
+  let months = 0, sal = 0, tot = 0, sav = 0; const per = [];
+  for (let m = 1; m <= 12; m++){
+    const md = peekMonth(y, m), has = hasData(md);
+    const p = { m, has, count: md ? md.entries.length : 0, salary: md?.salary || 0, total: has ? monthTotal(md) : 0, saving: has ? monthSaving(md) : 0 };
+    per.push(p);
+    if (has){ months++; sal += p.salary; tot += p.total; sav += p.saving; }
+  }
+  return { months, sal, tot, sav, per };
+}
+function actualAvg(){
+  let n = 0, s = 0;
+  Object.values(state.records).forEach(Y => Object.values(Y).forEach(md => { if (md.entries.length){ n++; s += monthSaving(md); } }));
+  return n ? { avg: s / n, n } : null;
+}
+const guideSal = () => state.guideSalary ?? state.salary;
+const ruleAmount = r => Math.floor(guideSal() * (r?.percent || 0) / 100);
+const ruleSum = () => Math.round(state.rules.reduce((a, r) => a + r.percent, 0) * 100) / 100;
+const ruleColor = (r, i) => state.categories.find(c => c.name.trim() === r.name.trim())?.color || PALETTE[(i + 5) % PALETTE.length];
+function projBase(){
+  if (state.projection.basis === 'actual'){ const a = actualAvg(); if (a) return { m: a.avg, src: 'actual', n: a.n }; return { m: planSaving(), src: 'fallback' }; }
+  return { m: planSaving(), src: 'plan' };
+}
+function fv(P, m, ratePct, months){
+  const principal = P + m * months, r = (ratePct || 0) / 100 / 12;
+  if (!r) return { total: principal, principal, interest: 0 };
+  const g = Math.pow(1 + r, months);
+  const total = P * g + m * (g - 1) / r;
+  return { total, principal, interest: total - principal };
+}
+function unusedColor(){ const used = new Set(state.categories.map(c => c.color.toUpperCase())); return PALETTE.find(p => !used.has(p.toUpperCase())) || PALETTE[state.categories.length % PALETTE.length]; }
+function newCat(name, amount = 0){ return { id: uid(), name, color: unusedColor(), type: 'single', amount, isSaving: false, items: [] }; }
+function moveById(arr, id, dir){ const i = arr.findIndex(x => x.id === id), j = i + dir; if (i < 0 || j < 0 || j >= arr.length) return; [arr[i], arr[j]] = [arr[j], arr[i]]; }
+function sortArr(arr, mode, amt, name){
+  if (mode === 'amtDesc') arr.sort((a, b) => amt(b) - amt(a));
+  else if (mode === 'amtAsc') arr.sort((a, b) => amt(a) - amt(b));
+  else if (mode === 'name') arr.sort((a, b) => name(a).localeCompare(name(b), 'ko'));
+  else return false;
+  return true;
+}
+
+/* ===== 아이콘 / 조각 ===== */
+const sv = p => `<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">${p}</svg>`;
+const ICON = {
+  up: sv('<path d="M6 15l6-6 6 6"/>'), down: sv('<path d="M6 9l6 6 6-6"/>'),
+  trash: sv('<path d="M4 7h16M10 11v6M14 11v6M5 7l1 12a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2l1-12M9 7V4h6v3"/>'),
+  plus: sv('<path d="M12 5v14M5 12h14"/>'),
+  opts: sv('<path d="M4 6h9M17 6h3M4 12h3M11 12h9M4 18h11M19 18h1"/><circle cx="15" cy="6" r="2"/><circle cx="9" cy="12" r="2"/><circle cx="17" cy="18" r="2"/>'),
+  pdf: sv('<path d="M14 3H7a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2V8z"/><path d="M14 3v5h5M12 11v6M9 14l3 3 3-3"/>'),
+  left: sv('<path d="M15 18l-6-6 6-6"/>'), right: sv('<path d="M9 6l6 6-6 6"/>'),
+  download: sv('<path d="M12 4v11M7 10l5 5 5-5M5 20h14"/>'), upload: sv('<path d="M12 16V5M7 10l5-5 5 5M5 20h14"/>'),
+  refresh: sv('<path d="M20 11a8 8 0 1 0-2.3 5.7M20 4v7h-7"/>')
+};
+const attrs = o => Object.entries(o || {}).map(([k, v]) => `data-${k}="${esc(v)}"`).join(' ');
+const iconBtn = (act, data, icon, label, opt = {}) =>
+  `<button type="button" class="ib ${opt.cls || ''}" data-act="${act}" ${attrs(data)} aria-label="${label}" title="${label}" ${opt.disabled ? 'disabled' : ''}>${ICON[icon]}</button>`;
+const moneyInput = (bind, value, opt = {}) =>
+  `<label class="minput ${opt.cls || ''}"><input class="money" type="text" inputmode="numeric" autocomplete="off" enterkeyhint="done" data-bind="${bind}" value="${value ? fmtN(value) : ''}" placeholder="${esc(opt.ph || '0')}" aria-label="${esc(opt.label || '금액')}"><span>원</span></label>`;
+const secHead = (title, what) =>
+  `<div class="sec-head"><h2>${title}</h2>${what ? `<button type="button" class="btn sm ghost" data-act="pdf" data-what="${what}">${ICON.pdf}PDF</button>` : ''}</div>`;
+const empty = msg => `<div class="empty">${msg}</div>`;
+const sortSel = (change, id, extra = '') =>
+  `<select class="sortsel" data-change="${change}" ${id ? `data-id="${id}"` : ''} aria-label="정렬"><option value="">정렬</option>${extra}<option value="amtDesc">금액 큰 순</option><option value="amtAsc">금액 작은 순</option><option value="name">이름순</option></select>`;
+
+/* ===== 화면: 현황 ===== */
+function viewDash(){
+  const now = new Date(), y = now.getFullYear(), m = now.getMonth() + 1;
+  const md = peekMonth(y, m), planT = planTotal(), planS = planSaving();
+  const sal = md?.salary || state.salary, salLabel = md?.salary ? '실제 월급' : '계획 월급';
+  const recT = monthTotal(md), recS = monthSaving(md);
+  const ys = yearSummary(y);
+  const ratio = planT ? recT / planT * 100 : 0;
+  const ach = planS && ys.months ? ys.sav / (planS * ys.months) * 100 : null;
+  const pb = projBase(), P = state.projection.startBalance, rate = state.projection.rate;
+
+  const onboarding = !state.salary && !planT && !ys.months ? `
+    <section class="card note"><b>처음 오셨네요</b>
+      <ol class="steps"><li><b style="display:inline">월급 배분</b>에서 월급과 나눌 금액을 적어요</li><li>얼마로 할지 모르겠다면 <b style="display:inline">비율 가이드</b>를 참고해요</li><li>매달 <b style="display:inline">월별 기록</b>에 실제로 한 금액을 남겨요</li></ol>
+      <button type="button" class="btn primary block" data-tab="plan">월급 입력하러 가기</button>
+    </section>` : '';
+
+  return `${secHead('현재 상황', 'dash')}
+  ${onboarding}
+  <section class="card hero">
+    <div class="eyebrow">${y}년 ${m}월 · 이번 달</div>
+    <div class="hero-num ${sal - recT < 0 ? 'neg' : ''}">${won(sal - recT)}</div>
+    <div class="sub">${recT ? `남은 돈 (${salLabel} − 기록 합계)` : '아직 이번 달 기록이 없어요'}</div>
+    <div class="stats3">
+      <div><span>${salLabel}</span><b>${won(sal)}</b></div>
+      <div><span>기록 합계</span><b>${won(recT)}</b></div>
+      <div><span>저축 기록</span><b>${won(recS)}</b></div>
+    </div>
+    <div class="prog"><div class="prog-top"><span>계획 대비 기록</span><span>${planT ? pct(ratio) : '-'}</span></div>
+      <div class="track"><div class="fill ${ratio > 100 ? 'over' : ''}" style="width:${Math.min(ratio, 100)}%"></div></div></div>
+    <button type="button" class="btn primary block" data-act="openMonth" data-y="${y}" data-m="${m}">이번 달 기록하기</button>
+  </section>
+
+  <section class="card">
+    <h3>월급 배분 계획</h3>
+    <div class="sumrow"><div><span>월급</span><b>${won(state.salary)}</b></div><div><span>배분 합계</span><b>${won(planT)}</b></div><div><span>남은 돈</span><b>${signWon(state.salary - planT)}</b></div></div>
+    ${planBarHTML()}
+  </section>
+
+  <section class="card">
+    <h3>${y}년 누적</h3>
+    <div class="kv4">
+      <div><span>기록한 달</span><b>${ys.months} / 12개월</b></div>
+      <div><span>총 월급</span><b>${won(ys.sal)}</b></div>
+      <div><span>총 저축</span><b>${won(ys.sav)}</b></div>
+      <div><span>계획 대비 저축</span><b>${ach == null ? '-' : pct(ach)}</b></div>
+    </div>
+    <div class="prog-top"><span>월별 저축 (막대) · 계획 (점선)</span></div>
+    ${yearChart(y)}
+  </section>
+
+  <section class="card">
+    <h3>저축 전망</h3>
+    <div class="kv4" style="grid-template-columns:repeat(3,1fr);margin-bottom:8px">
+      ${[1,2,3].map(n => `<div><span>${n}년 후</span><b>${kshort(fv(P, pb.m, rate, n * 12).total)}원</b></div>`).join('')}
+    </div>
+    <div class="hint">매달 ${won(pb.m)} 저축 기준 · <button type="button" class="link" data-tab="proj">자세히 보기</button></div>
+  </section>`;
+}
+function yearChart(y){
+  const ys = yearSummary(y), planS = planSaving(), now = new Date();
+  const W = 340, H = 150, pl = 4, pt = 10, pb = 20, bw = (W - pl * 2) / 12;
+  const max = Math.max(planS, ...ys.per.map(p => p.saving), 1);
+  const yv = v => H - pb - (v / max) * (H - pb - pt);
+  const bars = ys.per.map((p, i) => {
+    const x = pl + i * bw + bw * 0.2, w = bw * 0.6, top = yv(p.saving), h = Math.max(H - pb - top, p.has ? 2 : 0);
+    const cur = y === now.getFullYear() && p.m === now.getMonth() + 1;
+    return `<rect x="${x.toFixed(1)}" y="${(H - pb - h).toFixed(1)}" width="${w.toFixed(1)}" height="${h.toFixed(1)}" rx="3" fill="${cur ? '#1B64DA' : '#3182F6'}" opacity="${p.has ? 1 : 0}"/>
+      <text x="${(x + w / 2).toFixed(1)}" y="${H - 5}" text-anchor="middle" font-size="9.5" fill="${cur ? '#191F28' : '#8B95A1'}" font-weight="${cur ? 800 : 500}">${p.m}</text>`;
+  }).join('');
+  const line = planS ? `<line x1="${pl}" x2="${W - pl}" y1="${yv(planS).toFixed(1)}" y2="${yv(planS).toFixed(1)}" stroke="#F04452" stroke-width="1.2" stroke-dasharray="4 3"/>` : '';
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="${y}년 월별 저축 그래프"><line x1="${pl}" x2="${W - pl}" y1="${H - pb}" y2="${H - pb}" stroke="#E5E8EB"/>${bars}${line}</svg>`;
+}
+
+/* ===== 화면: 월급 배분 ===== */
+function planBarHTML(){
+  const sal = state.salary, tot = planTotal(), base = Math.max(sal, tot), cats = state.categories;
+  if (!base) return `<div class="bar"></div><div class="hint">월급과 금액을 입력하면 비율이 보여요</div>`;
+  const segs = cats.filter(c => catTotal(c) > 0).map(c => `<i style="width:${catTotal(c) / base * 100}%;background:${c.color}"></i>`).join('');
+  const rest = sal > tot ? `<i class="rest" style="width:${(sal - tot) / base * 100}%"></i>` : '';
+  const legend = cats.filter(c => catTotal(c) > 0).map(c => `<li><em style="background:${c.color}"></em>${esc(c.name || '이름 없음')} <b>${sal ? pct(catTotal(c) / sal * 100) : ''}</b></li>`).join('')
+    + (sal > tot ? `<li><em style="background:#E5E8EB"></em>남은 돈 <b>${pct((sal - tot) / sal * 100)}</b></li>` : '');
+  const warn = tot > sal && sal ? `<div class="warn">월급보다 ${won(tot - sal)} 더 배분했어요</div>` : (sal && tot === sal ? `<div class="okmsg">월급을 남김없이 모두 배분했어요</div>` : '');
+  return `<div class="bar">${segs}${rest}</div><ul class="legend">${legend}</ul>${warn}`;
+}
+function viewPlan(){
+  const cats = state.categories;
+  return `${secHead('월급 배분', 'plan')}
+  <section class="card">
+    <label class="lbl">이번 달 월급 (실수령액)</label>
+    ${moneyInput('salary', state.salary, { cls: 'xl', label: '월급' })}
+    <div class="hint" data-out="salaryKor"></div>
+  </section>
+  <section class="card sticky-sum">
+    <div class="sumrow"><div><span>배분 합계</span><b data-out="planTotal"></b></div><div><span>남은 돈</span><b data-out="planRemain"></b></div><div><span>저축</span><b data-out="planSaving"></b></div></div>
+    <div data-out="planBar"></div>
+  </section>
+  <div class="list-head"><h3>카테고리<small>${cats.length}개</small></h3>${cats.length > 1 ? sortSel('catSort') : ''}</div>
+  ${cats.map((c, i) => catCard(c, i, cats.length)).join('') || `<section class="card">${empty('카테고리가 없어요. 아래에서 추가해 주세요.')}</section>`}
+  <button type="button" class="btn dashed block" data-act="catAdd">${ICON.plus}카테고리 추가</button>
+  <p class="hint" style="text-align:center">카테고리 이름 옆 ${'<b>옵션</b>'} 버튼에서 ‘금액 하나 / 여러 항목’과 ‘저축으로 계산’을 바꿀 수 있어요.</p>`;
+}
+function catCard(c, i, n){
+  const open = ui.openOpts.has(c.id);
+  const items = c.type === 'multi' ? `
+    <div class="items">${c.items.map((it, j) => `
+      <div class="item">
+        <input class="txt" value="${esc(it.name)}" data-bind="item.name:${c.id}:${it.id}" placeholder="항목 이름" aria-label="항목 이름">
+        ${moneyInput(`item.amount:${c.id}:${it.id}`, it.amount)}
+        <div class="row-acts">${iconBtn('itemUp', { cid: c.id, iid: it.id }, 'up', '위로', { disabled: j === 0 })}${iconBtn('itemDown', { cid: c.id, iid: it.id }, 'down', '아래로', { disabled: j === c.items.length - 1 })}${iconBtn('itemDel', { cid: c.id, iid: it.id }, 'trash', '삭제', { cls: 'danger' })}</div>
+      </div>`).join('') || empty('항목을 추가해 주세요')}</div>
+    <div class="items-foot"><button type="button" class="btn sm ghost" data-act="itemAdd" data-id="${c.id}">${ICON.plus}항목 추가</button>${c.items.length > 1 ? sortSel('itemSort', c.id) : ''}</div>`
+    : `<div class="single">${moneyInput('cat.amount:' + c.id, c.amount, { label: c.name + ' 금액' })}</div>`;
+  return `<article class="card cat" style="--c:${c.color}">
+    <div class="cat-head">
+      <input type="color" class="swatch" value="${c.color}" data-bind="cat.color:${c.id}" aria-label="색상">
+      <input class="name-in" value="${esc(c.name)}" data-bind="cat.name:${c.id}" placeholder="카테고리 이름" aria-label="카테고리 이름">
+      <div class="cat-acts">${iconBtn('catUp', { id: c.id }, 'up', '위로', { disabled: i === 0 })}${iconBtn('catDown', { id: c.id }, 'down', '아래로', { disabled: i === n - 1 })}${iconBtn('catOpts', { id: c.id }, 'opts', '옵션', { cls: open ? 'on' : '' })}${iconBtn('catDel', { id: c.id }, 'trash', '삭제', { cls: 'danger' })}</div>
+    </div>
+    ${open ? `<div class="cat-opts">
+      <div class="seg"><button type="button" class="${c.type === 'single' ? 'on' : ''}" data-act="setType" data-id="${c.id}" data-v="single">금액 하나</button><button type="button" class="${c.type === 'multi' ? 'on' : ''}" data-act="setType" data-id="${c.id}" data-v="multi">여러 항목</button></div>
+      <label class="chk"><input type="checkbox" data-bind="cat.isSaving:${c.id}" ${c.isSaving ? 'checked' : ''}>저축으로 계산 (저축 전망에 반영)</label>
+    </div>` : ''}
+    ${items}
+    <div class="cat-foot"><span>${c.isSaving ? '<em class="tag">저축</em>' : ''}${c.type === 'multi' ? `항목 ${c.items.length}개 합계` : '금액'}</span><span><b data-out="catTotal:${c.id}"></b><small data-out="catPct:${c.id}"></small></span></div>
+  </article>`;
+}
+
+/* ===== 화면: 비율 가이드 ===== */
+function viewGuide(){
+  const rules = state.rules;
+  return `${secHead('비율 가이드', 'guide')}
+  <section class="card note"><b>얼마씩 나눠야 할지 모르겠을 때</b>월급을 정해진 비율로 나눠 보는 가이드예요. 비율 이름과 %는 자유롭게 바꿀 수 있어요.</section>
+  <section class="card">
+    <label class="lbl">기준 월급</label>
+    ${moneyInput('guideSalary', state.guideSalary, { cls: 'xl', ph: state.salary ? fmtN(state.salary) : '0', label: '기준 월급' })}
+    <div class="hint" data-out="guideSalaryKor"></div>
+  </section>
+  <div class="list-head"><h3>비율<small>${rules.length}개</small></h3><span data-out="ruleSum"></span></div>
+  <section class="card pad0">${rules.map((r, i) => `
+    <div class="rule">
+      <div class="rname"><em style="background:${ruleColor(r, i)}"></em><input class="txt" value="${esc(r.name)}" data-bind="rule.name:${r.id}" placeholder="이름" aria-label="비율 이름"></div>
+      <label class="pinput"><input type="text" inputmode="decimal" value="${r.percent || ''}" data-bind="rule.percent:${r.id}" placeholder="0" aria-label="비율"><span>%</span></label>
+      <b class="ramt" data-out="ruleAmt:${r.id}"></b>
+      <div class="row-acts">${iconBtn('ruleUp', { id: r.id }, 'up', '위로', { disabled: i === 0 })}${iconBtn('ruleDown', { id: r.id }, 'down', '아래로', { disabled: i === rules.length - 1 })}${iconBtn('ruleDel', { id: r.id }, 'trash', '삭제', { cls: 'danger' })}</div>
+    </div>`).join('') || empty('비율을 추가해 주세요')}
+  </section>
+  <div class="btn-row">
+    <button type="button" class="btn dashed" data-act="ruleAdd">${ICON.plus}비율 추가</button>
+    <button type="button" class="btn ghost" data-act="ruleReset">${ICON.refresh}기본값으로</button>
+  </div>
+  <section class="card">
+    <h3>지금 계획과 비교</h3>
+    <div data-out="guideCompare"></div>
+    <button type="button" class="btn primary block" style="margin-top:12px" data-act="ruleApply">가이드 금액을 월급 배분에 적용</button>
+  </section>`;
+}
+
+/* ===== 화면: 저축 전망 ===== */
+function viewProj(){
+  const p = state.projection;
+  return `${secHead('저축 전망', 'proj')}
+  <section class="card">
+    <label class="lbl">매달 저축액 기준</label>
+    <div class="seg"><button type="button" class="${p.basis === 'plan' ? 'on' : ''}" data-act="setBasis" data-v="plan">월급 배분 계획</button><button type="button" class="${p.basis === 'actual' ? 'on' : ''}" data-act="setBasis" data-v="actual">월별 기록 평균</button></div>
+    <div class="hint" data-out="projBasisInfo"></div>
+    <label class="lbl mt">저축으로 계산할 카테고리</label>
+    <div class="chips">${state.categories.map(c => `<label class="chip"><input type="checkbox" data-bind="cat.isSaving:${c.id}" ${c.isSaving ? 'checked' : ''}>${esc(c.name || '이름 없음')}</label>`).join('') || '<span class="faint">카테고리가 없어요</span>'}</div>
+    <div class="grid2" style="margin-top:14px">
+      <div><label class="lbl">지금까지 모은 금액</label>${moneyInput('proj.startBalance', p.startBalance, { label: '지금까지 모은 금액' })}</div>
+      <div><label class="lbl">연 이율 (선택)</label><label class="pinput"><input type="text" inputmode="decimal" value="${p.rate || ''}" data-bind="proj.rate" placeholder="0" aria-label="연 이율"><span>%</span></label></div>
+    </div>
+    <div class="hint">이율은 월복리·세전 기준의 단순 계산이에요. 비워 두면 원금만 계산해요.</div>
+  </section>
+  <div data-out="projResult"></div>`;
+}
+function projResultHTML(){
+  const pb = projBase(), P = state.projection.startBalance, rate = state.projection.rate, now = new Date();
+  const cards = [1, 2, 3].map(n => {
+    const r = fv(P, pb.m, rate, n * 12), d = new Date(now.getFullYear() + n, now.getMonth(), 1);
+    return `<div class="ycard"><div class="ylabel">${n}년 후<small>${d.getFullYear()}년 ${d.getMonth() + 1}월</small></div>
+      <div class="yright"><div class="ytotal">${won(r.total)}</div><div class="ykor">${kor(r.total)}</div>
+      <div class="ysplit">원금 ${won(r.principal)}${r.interest > 0 ? ` · 이자 +${won(r.interest)}` : ''}</div></div></div>`;
+  }).join('');
+  return `<section class="card"><div class="eyebrow">매달 저축</div><div class="hero-num">${won(pb.m)}</div>
+      <div class="sub">${P ? `시작 금액 ${won(P)} 포함 · ` : ''}${rate ? `연 ${rate}%` : '이자 없이 계산'}</div></section>
+    <div class="ycards">${cards}</div>
+    <section class="card"><h3>3년 동안 모이는 흐름</h3>${pb.m || P ? projChart(P, pb.m, rate) : empty('저축 금액을 입력하면 그래프가 보여요')}</section>`;
+}
+function projChart(P, m, rate){
+  const W = 340, H = 170, pl = 8, pr = 10, pt = 22, pb = 22, N = 36;
+  const pts = []; for (let i = 0; i <= N; i++) pts.push(fv(P, m, rate, i).total);
+  const max = Math.max(...pts, 1);
+  const x = i => pl + (W - pl - pr) * i / N, y = v => pt + (H - pt - pb) * (1 - v / max);
+  const line = pts.map((v, i) => `${i ? 'L' : 'M'}${x(i).toFixed(1)},${y(v).toFixed(1)}`).join('');
+  const area = `${line}L${x(N).toFixed(1)},${H - pb}L${x(0).toFixed(1)},${H - pb}Z`;
+  const marks = [12, 24, 36].map(i => `<line x1="${x(i)}" x2="${x(i)}" y1="${pt - 6}" y2="${H - pb}" stroke="#E5E8EB" stroke-dasharray="3 3"/>
+    <circle cx="${x(i)}" cy="${y(pts[i]).toFixed(1)}" r="4.5" fill="#3182F6" stroke="#fff" stroke-width="2"/>
+    <text x="${x(i) - (i === 36 ? 6 : 0)}" y="${(y(pts[i]) - 9).toFixed(1)}" text-anchor="${i === 36 ? 'end' : 'middle'}" font-size="10.5" font-weight="800" fill="#191F28">${kshort(pts[i])}</text>
+    <text x="${x(i)}" y="${H - 6}" text-anchor="${i === 36 ? 'end' : 'middle'}" font-size="10" fill="#8B95A1">${i / 12}년</text>`).join('');
+  return `<svg class="chart" viewBox="0 0 ${W} ${H}" role="img" aria-label="3년 저축 그래프">
+    <path d="${area}" fill="#E8F3FF"/><path d="${line}" fill="none" stroke="#3182F6" stroke-width="2.5" stroke-linejoin="round"/>
+    <line x1="${pl}" x2="${W - pr}" y1="${H - pb}" y2="${H - pb}" stroke="#D1D6DB"/>
+    <text x="${pl}" y="${H - 6}" font-size="10" fill="#8B95A1">지금</text>${marks}</svg>`;
+}
+
+/* ===== 화면: 월별 기록 ===== */
+function viewMonthGrid(){
+  const y = view.year, now = new Date(), ys = yearSummary(y), planS = planSaving();
+  return `${secHead('월별 기록', 'year')}
+  <div class="yearnav">${iconBtn('yearPrev', {}, 'left', '이전 해')}<b>${y}년</b>${iconBtn('yearNext', {}, 'right', '다음 해')}</div>
+  <div class="mgrid">${ys.per.map(p => {
+    const cur = y === now.getFullYear() && p.m === now.getMonth() + 1;
+    return `<button type="button" class="mcard ${cur ? 'cur' : ''} ${p.has ? 'has' : ''}" data-act="openMonth" data-y="${y}" data-m="${p.m}">
+      <div class="mtop"><b>${p.m}월</b>${p.has ? `<span class="chipok">${p.count}건</span>` : '<span class="chipno">비어 있음</span>'}</div>
+      <div class="mrow"><span>월급</span><b>${p.salary ? won(p.salary) : '-'}</b></div>
+      <div class="mrow"><span>기록</span><b>${p.has ? won(p.total) : '-'}</b></div>
+      <div class="mrow"><span>저축</span><b>${p.has ? won(p.saving) : '-'}</b></div></button>`;
+  }).join('')}</div>
+  <section class="card">
+    <h3>${y}년 합계</h3>
+    <div class="kv4">
+      <div><span>기록한 달</span><b>${ys.months}개월</b></div>
+      <div><span>총 월급</span><b>${won(ys.sal)}</b></div>
+      <div><span>총 기록</span><b>${won(ys.tot)}</b></div>
+      <div><span>총 저축</span><b>${won(ys.sav)}</b></div>
+      <div><span>월 평균 저축</span><b>${ys.months ? won(ys.sav / ys.months) : '-'}</b></div>
+      <div><span>계획 대비 저축</span><b>${planS && ys.months ? pct(ys.sav / (planS * ys.months) * 100) : '-'}</b></div>
+    </div>
+    ${yearChart(y)}
+  </section>
+  <button type="button" class="btn danger-text block" data-act="clearYear">${ICON.trash}${y}년 기록 모두 삭제</button>`;
+}
+function viewMonthDetail(){
+  const y = view.year, m = view.month, md = getMonth(y, m);
+  const ix = new Map(state.categories.map((c, i) => [c.id, i]));
+  return `<div class="detail-top">
+    <button type="button" class="btn sm ghost" data-act="closeMonth">${ICON.left}목록</button>
+    <div class="mnav">${iconBtn('monthPrev', {}, 'left', '이전 달')}<b>${y}년 ${m}월</b>${iconBtn('monthNext', {}, 'right', '다음 달')}</div>
+    <button type="button" class="btn sm ghost" data-act="pdf" data-what="month">${ICON.pdf}PDF</button>
+  </div>
+  <section class="card" style="margin-top:12px">
+    <label class="lbl">실제 받은 월급</label>
+    ${moneyInput('month.salary', md.salary, { cls: 'xl', ph: state.salary ? fmtN(state.salary) : '0', label: '실제 받은 월급' })}
+    <div class="hint">${state.salary ? `계획 월급 ${won(state.salary)} · <button type="button" class="link" data-act="monthUsePlanSalary">그대로 넣기</button>` : '월급 배분 탭에 계획 월급을 적으면 여기서 불러올 수 있어요'}</div>
+  </section>
+  <section class="card sticky-sum">
+    <div class="sumrow"><div><span>기록 합계</span><b data-out="monthTotal"></b></div><div><span>남은 돈</span><b data-out="monthRemain"></b></div><div><span>저축</span><b data-out="monthSaving"></b></div></div>
+  </section>
+  <div class="list-head"><h3>실제 기록<small>${md.entries.length}건</small></h3>${md.entries.length > 1 ? sortSel('entrySort', '', '<option value="cat">카테고리순</option>') : ''}</div>
+  <section class="card pad0">${md.entries.map((e, i) => {
+    const c = cat(e.catId);
+    return `<div class="entry" style="--c:${c?.color || '#D1D6DB'}">
+      <select class="txt ecat" data-bind="entry.catId:${e.id}" aria-label="카테고리"><option value="">미분류</option>${state.categories.map(k => `<option value="${k.id}" ${k.id === e.catId ? 'selected' : ''}>${esc(k.name || '이름 없음')}</option>`).join('')}</select>
+      <input class="txt ename" value="${esc(e.name)}" data-bind="entry.name:${e.id}" placeholder="항목" aria-label="항목">
+      ${moneyInput('entry.amount:' + e.id, e.amount)}
+      <input class="txt ememo" value="${esc(e.memo)}" data-bind="entry.memo:${e.id}" placeholder="메모 (선택)" aria-label="메모">
+      <div class="row-acts">${iconBtn('entryUp', { id: e.id }, 'up', '위로', { disabled: i === 0 })}${iconBtn('entryDown', { id: e.id }, 'down', '아래로', { disabled: i === md.entries.length - 1 })}${iconBtn('entryDel', { id: e.id }, 'trash', '삭제', { cls: 'danger' })}</div>
+    </div>`;
+  }).join('') || empty('아직 기록이 없어요.<br>‘계획 불러오기’로 한 번에 채우거나 직접 추가해 보세요.')}</section>
+  <div class="btn-row">
+    <button type="button" class="btn dashed" data-act="entryAdd">${ICON.plus}기록 추가</button>
+    <button type="button" class="btn ghost" data-act="monthLoadPlan">${ICON.download}계획 불러오기</button>
+  </div>
+  <section class="card"><h3>계획 대비</h3><div data-out="monthCompare"></div></section>
+  <section class="card"><label class="lbl">이 달 메모</label><textarea class="txt" rows="3" data-bind="month.memo" placeholder="보너스, 경조사비 등 이번 달 특이사항">${esc(md.memo)}</textarea></section>
+  <button type="button" class="btn danger-text block" data-act="monthClear">${ICON.trash}이 달 기록 비우기</button>`;
+}
+function monthCompareRows(md){
+  const rows = state.categories.map(c => ({ name: c.name || '이름 없음', color: c.color, plan: catTotal(c), act: md.entries.filter(e => e.catId === c.id).reduce((a, e) => a + e.amount, 0) }));
+  const un = md.entries.filter(e => !cat(e.catId)).reduce((a, e) => a + e.amount, 0);
+  if (un) rows.push({ name: '미분류', color: '#D1D6DB', plan: 0, act: un });
+  return rows;
+}
+function monthCompareHTML(){
+  const md = curMonth(), rows = monthCompareRows(md);
+  if (!rows.length) return empty('카테고리가 없어요');
+  const tp = rows.reduce((a, r) => a + r.plan, 0), ta = rows.reduce((a, r) => a + r.act, 0);
+  const diff = d => d === 0 ? '<span class="faint">0원</span>' : `<span class="${d > 0 ? 'neg' : 'pos'}">${d > 0 ? '+' : ''}${won(d)}</span>`;
+  return `<div class="scroll-x"><table class="tbl"><thead><tr><th>카테고리</th><th class="n">계획</th><th class="n">실제</th><th class="n">차이</th></tr></thead><tbody>
+    ${rows.map(r => `<tr><td><em style="background:${r.color}"></em>${esc(r.name)}</td><td class="n">${won(r.plan)}</td><td class="n">${won(r.act)}</td><td class="n">${diff(r.act - r.plan)}</td></tr>`).join('')}
+    </tbody><tfoot><tr><td>합계</td><td class="n">${won(tp)}</td><td class="n">${won(ta)}</td><td class="n">${diff(ta - tp)}</td></tr></tfoot></table></div>
+    <div class="hint">차이: 계획보다 더 쓰거나 넣으면 빨간색, 덜 하면 초록색이에요.</div>`;
+}
+
+/* ===== 화면: 데이터 ===== */
+function viewSet(){
+  return `${secHead('데이터 관리')}
+  <section class="card">
+    <h3>자동저장</h3>
+    <div class="set-row"><div><b>마지막 저장</b><p>입력하는 즉시 이 브라우저에 저장돼요</p></div><b data-out="lastSaved" style="text-align:right;font-size:13.5px"></b></div>
+  </section>
+  <section class="card">
+    <h3>백업 · 옮기기</h3>
+    <p class="hint" style="margin:-4px 0 12px">다른 기기나 브라우저로 옮길 때, 또는 백업용으로 JSON 파일을 사용해요.</p>
+    <div class="btn-row" style="margin:0">
+      <button type="button" class="btn primary" data-act="exportJson">${ICON.download}내보내기</button>
+      <button type="button" class="btn ghost" data-act="importJson">${ICON.upload}가져오기</button>
+    </div>
+  </section>
+  <section class="card">
+    <h3>PDF로 내보내기</h3>
+    <div class="pdf-grid">
+      <button type="button" class="btn primary" style="grid-column:1/-1" data-act="pdf" data-what="all">${ICON.pdf}전체 리포트</button>
+      <button type="button" class="btn ghost" data-act="pdf" data-what="dash">현황</button>
+      <button type="button" class="btn ghost" data-act="pdf" data-what="plan">월급 배분</button>
+      <button type="button" class="btn ghost" data-act="pdf" data-what="guide">비율 가이드</button>
+      <button type="button" class="btn ghost" data-act="pdf" data-what="proj">저축 전망</button>
+      <button type="button" class="btn ghost" style="grid-column:1/-1" data-act="pdf" data-what="year">${view.year}년 월별 기록</button>
+    </div>
+  </section>
+  <section class="card">
+    <h3>버전</h3>
+    <div class="set-row"><div><b>현재 v${APP_VERSION}</b><p>새 버전이 올라오면 팝업으로 알려 드려요</p></div><button type="button" class="btn sm ghost" data-act="checkUpdate">${ICON.refresh}업데이트 확인</button></div>
+    <ul class="changelog">${CHANGELOG.map(c => `<li><b>v${c.v}</b> <span class="faint">${c.date}</span><ul>${c.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul></li>`).join('')}</ul>
+  </section>
+  <section class="card danger-zone">
+    <h3>초기화</h3>
+    <p class="hint" style="margin:-4px 0 12px">모든 계획과 기록이 지워져요. 먼저 내보내기로 백업해 두세요.</p>
+    <button type="button" class="btn danger block" data-act="resetAll">${ICON.trash}모든 데이터 삭제</button>
+  </section>`;
+}
+
+/* ===== 렌더 / 파생값 ===== */
+function render(){
+  document.querySelectorAll('#tabs button').forEach(b => b.classList.toggle('on', b.dataset.tab === view.tab));
+  const V = { dash: viewDash, plan: viewPlan, guide: viewGuide, proj: viewProj, month: () => view.month ? viewMonthDetail() : viewMonthGrid(), set: viewSet };
+  $('#view').innerHTML = V[view.tab]();
+  updateDerived();
+}
+const OUT = {
+  lastSaved: () => state.updatedAt ? fmtDateTime(state.updatedAt) : '아직 저장 전',
+  salaryKor: () => state.salary ? `≈ ${kor(state.salary)}` : '세금 등을 뺀 실제 받는 금액을 적어 주세요',
+  planTotal: () => won(planTotal()),
+  planRemain: () => signWon(state.salary - planTotal()),
+  planSaving: () => won(planSaving()),
+  planBar: () => planBarHTML(),
+  catTotal: id => cat(id) ? won(catTotal(cat(id))) : '',
+  catPct: id => cat(id) && state.salary ? pct(catTotal(cat(id)) / state.salary * 100) : '',
+  ruleAmt: id => rule(id) ? won(ruleAmount(rule(id))) : '',
+  ruleSum: () => { const s = ruleSum(); return s === 100 ? `<span class="pos" style="font-weight:700;font-size:14px">합계 100%</span>` : `<span class="neg" style="font-weight:700;font-size:14px">합계 ${s}% · 100%로 맞춰 주세요</span>`; },
+  guideSalaryKor: () => state.guideSalary == null ? (state.salary ? `월급 배분 탭의 월급(${won(state.salary)})을 사용 중이에요` : '월급을 입력해 주세요') : `≈ ${kor(state.guideSalary)} · <button type="button" class="link" data-act="guideUsePlan">배분 탭 월급 사용</button>`,
+  guideCompare: () => {
+    if (!state.rules.length) return empty('비율이 없어요');
+    return `<div class="scroll-x"><table class="tbl"><thead><tr><th>이름</th><th class="n">가이드</th><th class="n">지금 계획</th><th class="n">차이</th></tr></thead><tbody>${state.rules.map(r => {
+      const c = state.categories.find(k => k.name.trim() === r.name.trim() && r.name.trim());
+      const g = ruleAmount(r), p = c ? catTotal(c) : null;
+      return `<tr><td>${esc(r.name || '이름 없음')}</td><td class="n">${won(g)}</td><td class="n">${p == null ? '<span class="faint">없음</span>' : won(p)}</td><td class="n">${p == null ? '-' : signWon(p - g)}</td></tr>`;
+    }).join('')}</tbody></table></div><div class="hint">이름이 같은 카테고리끼리 비교해요.</div>`;
+  },
+  projBasisInfo: () => {
+    const b = projBase();
+    if (b.src === 'actual') return `월별 기록 ${b.n}개월 평균 저축액을 사용해요`;
+    if (b.src === 'fallback') return `<span class="neg">아직 월별 기록이 없어서 계획 기준으로 계산했어요</span>`;
+    return '아래에서 체크한 카테고리의 계획 금액 합계를 사용해요';
+  },
+  projResult: () => projResultHTML(),
+  monthTotal: () => won(monthTotal(curMonth())),
+  monthRemain: () => { const md = curMonth(); return md.salary ? signWon(md.salary - monthTotal(md)) : '<span class="faint">월급 입력</span>'; },
+  monthSaving: () => won(monthSaving(curMonth())),
+  monthCompare: () => monthCompareHTML()
+};
+function updateDerived(){
+  document.querySelectorAll('[data-out]').forEach(el => {
+    const [k, a] = el.dataset.out.split(':');
+    try { if (OUT[k]) el.innerHTML = OUT[k](a); } catch (e) { console.error(e); }
+  });
+}
+
+/* ===== 입력 바인딩 ===== */
+function setBound(el){
+  const [key, a, b] = el.dataset.bind.split(':');
+  const v = el.type === 'checkbox' ? el.checked : el.value;
+  const p = state.projection;
+  switch (key){
+    case 'salary': state.salary = money(v); break;
+    case 'cat.name': cat(a) && (cat(a).name = v); break;
+    case 'cat.amount': cat(a) && (cat(a).amount = money(v)); break;
+    case 'cat.color': if (cat(a)){ cat(a).color = v; el.closest('.cat')?.style.setProperty('--c', v); } break;
+    case 'cat.isSaving': cat(a) && (cat(a).isSaving = !!v); document.querySelectorAll(`[data-bind="cat.isSaving:${a}"]`).forEach(x => { x.checked = !!v; }); break;
+    case 'item.name': item(a, b) && (item(a, b).name = v); break;
+    case 'item.amount': item(a, b) && (item(a, b).amount = money(v)); break;
+    case 'rule.name': rule(a) && (rule(a).name = v); break;
+    case 'rule.percent': rule(a) && (rule(a).percent = num(v)); break;
+    case 'guideSalary': state.guideSalary = String(v).trim() === '' ? null : money(v); break;
+    case 'proj.startBalance': p.startBalance = money(v); break;
+    case 'proj.rate': p.rate = num(v); break;
+    case 'month.salary': curMonth().salary = money(v); break;
+    case 'month.memo': curMonth().memo = v; break;
+    case 'entry.catId': entry(a) && (entry(a).catId = v || null); break;
+    case 'entry.name': entry(a) && (entry(a).name = v); break;
+    case 'entry.amount': entry(a) && (entry(a).amount = money(v)); break;
+    case 'entry.memo': entry(a) && (entry(a).memo = v); break;
+    default: return;
+  }
+  touch();
+}
+function liveFormat(el){
+  const pos = el.selectionStart ?? el.value.length;
+  const before = el.value.slice(0, pos).replace(/\D/g, '').length;
+  const digits = el.value.replace(/\D/g, '').replace(/^0+(?=\d)/, '').slice(0, 15);
+  const f = digits ? Number(digits).toLocaleString('ko-KR') : '';
+  if (f === el.value) return;
+  el.value = f;
+  let i = 0, d = 0; while (i < f.length && d < before){ if (/\d/.test(f[i])) d++; i++; }
+  try { el.setSelectionRange(i, i); } catch (e) {}
+}
+
+/* ===== 모달 / 토스트 ===== */
+function modal({ title, html = '', buttons, col }){
+  return new Promise(res => {
+    const wrap = document.createElement('div'); wrap.className = 'mback';
+    wrap.innerHTML = `<div class="modal" role="dialog" aria-modal="true"><h3>${title}</h3><div>${html}</div><div class="mbtns ${col ? 'col' : ''}">${buttons.map((b, i) => `<button type="button" class="btn ${b.cls || 'ghost'}" data-i="${i}">${b.label}</button>`).join('')}</div></div>`;
+    const onKey = e => { if (e.key === 'Escape') close(null); };
+    const close = v => { document.removeEventListener('keydown', onKey); wrap.classList.remove('show'); setTimeout(() => wrap.remove(), 160); res(v); };
+    wrap.addEventListener('click', e => { if (e.target === wrap) return close(null); const b = e.target.closest('[data-i]'); if (b){ e.stopPropagation(); close(buttons[+b.dataset.i].value); } });
+    document.addEventListener('keydown', onKey);
+    $('#modalRoot').appendChild(wrap);
+    requestAnimationFrame(() => wrap.classList.add('show'));
+  });
+}
+const confirmDel = msg => modal({ title: '정말 삭제할까요?', html: `<p>${msg}</p><p class="faint" style="font-size:13px">삭제하면 되돌릴 수 없어요.</p>`, buttons: [{ label: '취소', value: false }, { label: '삭제', cls: 'danger', value: true }] }).then(Boolean);
+const confirmAct = (title, msg, ok) => modal({ title, html: `<p>${msg}</p>`, buttons: [{ label: '취소', value: false }, { label: ok, cls: 'primary', value: true }] }).then(Boolean);
+const alertBox = (title, html) => modal({ title, html, buttons: [{ label: '확인', cls: 'primary', value: true }] });
+let toastTimer;
+function toast(msg){ const t = $('#toast'); t.textContent = msg; t.classList.add('show'); clearTimeout(toastTimer); toastTimer = setTimeout(() => t.classList.remove('show'), 2200); }
+function focusSel(sel, select){ requestAnimationFrame(() => { const el = document.querySelector(sel); if (!el) return; el.focus(); if (select && el.select) el.select(); el.scrollIntoView?.({ block: 'center', behavior: 'smooth' }); }); }
+function go(tab){ view.tab = tab; saveView(); render(); try { window.scrollTo(0, 0); } catch (e) {} }
+
+/* ===== 동작 ===== */
+const ACT = {
+  catAdd(){ const c = newCat('새 카테고리'); state.categories.push(c); ui.openOpts.add(c.id); touch(); render(); focusSel(`[data-bind="cat.name:${c.id}"]`, true); },
+  catUp: d => { moveById(state.categories, d.id, -1); touch(); render(); },
+  catDown: d => { moveById(state.categories, d.id, 1); touch(); render(); },
+  catOpts: d => { ui.openOpts.has(d.id) ? ui.openOpts.delete(d.id) : ui.openOpts.add(d.id); render(); },
+  async catDel(d){
+    const c = cat(d.id); if (!c) return;
+    const extra = c.type === 'multi' && c.items.length ? ` 안에 있는 항목 ${c.items.length}개도 함께 삭제돼요.` : '';
+    if (!await confirmDel(`‘${esc(c.name || '이름 없음')}’ 카테고리를 삭제할까요?${extra}<br>월별 기록 중 이 카테고리 기록은 ‘미분류’로 남아요.`)) return;
+    state.categories = state.categories.filter(x => x !== c); touch(); render(); toast('삭제했어요');
+  },
+  setType(d){
+    const c = cat(d.id); if (!c || c.type === d.v) return;
+    if (d.v === 'single') c.amount = sum(c.items);
+    else if (!c.items.length) c.items = [{ id: uid(), name: c.amount ? c.name : '', amount: c.amount }];
+    c.type = d.v; touch(); render();
+  },
+  itemAdd(d){ const c = cat(d.id); if (!c) return; const it = { id: uid(), name: '', amount: 0 }; c.items.push(it); touch(); render(); focusSel(`[data-bind="item.name:${c.id}:${it.id}"]`); },
+  itemUp: d => { moveById(cat(d.cid).items, d.iid, -1); touch(); render(); },
+  itemDown: d => { moveById(cat(d.cid).items, d.iid, 1); touch(); render(); },
+  async itemDel(d){
+    const c = cat(d.cid), it = item(d.cid, d.iid); if (!it) return;
+    if (!await confirmDel(`‘${esc(it.name || '이름 없는 항목')}’${it.amount ? ` (${won(it.amount)})` : ''} 항목을 삭제할까요?`)) return;
+    c.items = c.items.filter(x => x !== it); touch(); render(); toast('삭제했어요');
+  },
+  ruleAdd(){ const r = { id: uid(), name: '', percent: 0 }; state.rules.push(r); touch(); render(); focusSel(`[data-bind="rule.name:${r.id}"]`); },
+  ruleUp: d => { moveById(state.rules, d.id, -1); touch(); render(); },
+  ruleDown: d => { moveById(state.rules, d.id, 1); touch(); render(); },
+  async ruleDel(d){
+    const r = rule(d.id); if (!r) return;
+    if (!await confirmDel(`‘${esc(r.name || '이름 없음')}’ (${r.percent}%) 비율을 삭제할까요?`)) return;
+    state.rules = state.rules.filter(x => x !== r); touch(); render(); toast('삭제했어요');
+  },
+  async ruleReset(){
+    if (!await confirmDel('지금 비율을 지우고 기본값(저축 40% · 비상금 5% · 문화생활 5% · 생활비 50%)으로 되돌릴까요?')) return;
+    state.rules = defaultRules(); touch(); render(); toast('기본값으로 되돌렸어요');
+  },
+  guideUsePlan(){ state.guideSalary = null; touch(); render(); },
+  async ruleApply(){
+    const gs = guideSal(); if (!gs){ toast('기준 월급을 먼저 입력해 주세요'); return; }
+    if (!await confirmAct('월급 배분에 적용할까요?', '이름이 같은 카테고리의 금액을 가이드 금액으로 바꾸고, 없는 카테고리는 새로 만들어요.<br><br>‘여러 항목’ 카테고리는 이미 나눠 둔 항목이 있어서 바꾸지 않고 목표 금액만 알려 드려요.', '적용')) return;
+    state.salary = gs;
+    let changed = 0, created = 0; const skipped = [];
+    state.rules.forEach(r => {
+      const name = r.name.trim(); if (!name) return;
+      const amt = ruleAmount(r), c = state.categories.find(k => k.name.trim() === name);
+      if (!c){ state.categories.push(newCat(name, amt)); created++; }
+      else if (c.type === 'single'){ c.amount = amt; changed++; }
+      else skipped.push(`${esc(name)}: 목표 ${won(amt)} (지금 ${won(catTotal(c))})`);
+    });
+    touch(); render();
+    alertBox('적용했어요', `<p>금액 변경 ${changed}개 · 새로 만듦 ${created}개</p>${skipped.length ? `<p><b>직접 나눠 주세요</b><br>${skipped.join('<br>')}</p>` : ''}`);
+  },
+  setBasis(d){ state.projection.basis = d.v; touch(); render(); },
+  yearPrev(){ view.year--; saveView(); render(); },
+  yearNext(){ view.year++; saveView(); render(); },
+  openMonth(d){ view.tab = 'month'; view.year = +d.y; view.month = +d.m; saveView(); render(); try { window.scrollTo(0, 0); } catch (e) {} },
+  closeMonth(){ view.month = null; saveView(); render(); },
+  monthPrev(){ if (--view.month < 1){ view.month = 12; view.year--; } saveView(); render(); },
+  monthNext(){ if (++view.month > 12){ view.month = 1; view.year++; } saveView(); render(); },
+  monthUsePlanSalary(){ curMonth().salary = state.salary; touch(); render(); },
+  async monthLoadPlan(){
+    const md = curMonth();
+    const fromPlan = [];
+    state.categories.forEach(c => {
+      if (c.type === 'multi') c.items.forEach(it => fromPlan.push({ id: uid(), catId: c.id, name: it.name, amount: it.amount, memo: '' }));
+      else fromPlan.push({ id: uid(), catId: c.id, name: c.name, amount: c.amount, memo: '' });
+    });
+    if (!fromPlan.length){ toast('불러올 계획이 없어요'); return; }
+    if (md.entries.length){
+      const v = await modal({ title: '계획을 불러올까요?', html: `<p>이미 기록이 ${md.entries.length}건 있어요. 어떻게 할까요?</p>`, col: true,
+        buttons: [{ label: '기존 기록 뒤에 추가', cls: 'primary', value: 'append' }, { label: '기존 기록 지우고 덮어쓰기', cls: 'danger', value: 'replace' }, { label: '취소', value: null }] });
+      if (!v) return;
+      md.entries = v === 'replace' ? fromPlan : md.entries.concat(fromPlan);
+    } else md.entries = fromPlan;
+    if (!md.salary) md.salary = state.salary;
+    touch(); render(); toast(`계획 ${fromPlan.length}건을 불러왔어요`);
+  },
+  async monthClear(){
+    if (!await confirmDel(`${view.year}년 ${view.month}월의 월급, 기록, 메모를 모두 지울까요?`)) return;
+    const md = curMonth(); md.salary = 0; md.entries = []; md.memo = ''; touch(); render(); toast('비웠어요');
+  },
+  entryAdd(){ const md = curMonth(); const e = { id: uid(), catId: state.categories[0]?.id || null, name: '', amount: 0, memo: '' }; md.entries.push(e); touch(); render(); focusSel(`[data-bind="entry.amount:${e.id}"]`); },
+  entryUp: d => { moveById(curMonth().entries, d.id, -1); touch(); render(); },
+  entryDown: d => { moveById(curMonth().entries, d.id, 1); touch(); render(); },
+  async entryDel(d){
+    const e = entry(d.id); if (!e) return;
+    const label = e.name || cat(e.catId)?.name || '이 기록';
+    if (!await confirmDel(`‘${esc(label)}’${e.amount ? ` (${won(e.amount)})` : ''} 기록을 삭제할까요?`)) return;
+    const md = curMonth(); md.entries = md.entries.filter(x => x !== e); touch(); render(); toast('삭제했어요');
+  },
+  pdf: d => exportByWhat(d.what),
+  exportJson(){
+    flush();
+    const payload = { app: 'salary-routine', appVersion: APP_VERSION, exportedAt: new Date().toISOString(), data: state };
+    download(new Blob([JSON.stringify(payload, null, 2)], { type: 'application/json' }), `월급루틴_백업_${stampFile()}.json`);
+    toast('백업 파일을 내보냈어요');
+  },
+  importJson(){ $('#importFile').click(); },
+  async resetAll(){
+    if (!await confirmDel('모든 계획, 비율, 월별 기록이 지워지고 처음 상태로 돌아가요.')) return;
+    state = defaultState(); ui.openOpts.clear(); view.month = null; saveView(); saveNow(); render(); toast('초기화했어요');
+  },
+  async clearYear(){
+    const y = view.year;
+    if (!state.records[y] || !yearSummary(y).months){ toast(`${y}년에는 기록이 없어요`); return; }
+    if (!await confirmDel(`${y}년의 1~12월 기록을 모두 삭제할까요?`)) return;
+    delete state.records[y]; touch(); render(); toast('삭제했어요');
+  },
+  checkUpdate(){ checkRemote(true); }
+};
+const CHG = {
+  catSort(el){ if (sortArr(state.categories, el.value, catTotal, c => c.name)){ touch(); render(); toast('정렬했어요'); } },
+  itemSort(el){ const c = cat(el.dataset.id); if (c && sortArr(c.items, el.value, i => i.amount, i => i.name)){ touch(); render(); toast('정렬했어요'); } },
+  entrySort(el){
+    const arr = curMonth().entries;
+    if (el.value === 'cat'){ const ix = new Map(state.categories.map((c, i) => [c.id, i])); arr.sort((a, b) => (ix.get(a.catId) ?? 999) - (ix.get(b.catId) ?? 999)); }
+    else if (!sortArr(arr, el.value, e => e.amount, e => e.name || cat(e.catId)?.name || '')) return;
+    touch(); render(); toast('정렬했어요');
+  }
+};
+function download(blob, filename){
+  const a = document.createElement('a'); a.href = URL.createObjectURL(blob); a.download = filename;
+  document.body.appendChild(a); a.click(); setTimeout(() => { URL.revokeObjectURL(a.href); a.remove(); }, 800);
+}
+
+/* ===== PDF ===== */
+const RCSS = `<style>
+.rp{font-family:'Pretendard',-apple-system,'Apple SD Gothic Neo','Noto Sans KR','Malgun Gothic',sans-serif;color:#191F28;font-size:11.5px;line-height:1.55;background:#fff;word-break:keep-all}
+.rp-head{border-bottom:2px solid #191F28;padding-bottom:10px;margin-bottom:14px}
+.rp-brand{font-size:10px;color:#3182F6;font-weight:800;letter-spacing:.04em}
+.rp h1{font-size:21px;margin:2px 0;font-weight:800;letter-spacing:-.02em}
+.rp-meta{font-size:10px;color:#8B95A1}
+.rp h2{font-size:13.5px;margin:18px 0 7px;font-weight:800}
+.rp table{width:100%;border-collapse:collapse;margin-bottom:6px}
+.rp th{background:#F2F4F6;font-weight:700;font-size:10.5px;color:#4E5968;text-align:left;padding:6px 8px}
+.rp td{padding:6px 8px;border-bottom:1px solid #E5E8EB;vertical-align:top}
+.rp .n{text-align:right;white-space:nowrap}
+.rp .sub td{color:#6B7684;font-size:10.5px;padding-top:3px;padding-bottom:3px}
+.rp .sub td:first-child{padding-left:24px}
+.rp tfoot td{font-weight:800;border-top:1.5px solid #191F28;border-bottom:0}
+.rp .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px}
+.rp .kv{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:6px}
+.rp .kv div{flex:1 1 120px;background:#F9FAFB;border:1px solid #E5E8EB;border-radius:8px;padding:8px 10px}
+.rp .kv span{display:block;font-size:10px;color:#6B7684}
+.rp .kv b{font-size:14px}
+.rp .neg{color:#F04452}.rp .pos{color:#00A877}.rp .faint{color:#8B95A1}
+.rp .memo{white-space:pre-wrap;background:#F9FAFB;border-radius:8px;padding:8px 10px}
+.rp tr{page-break-inside:avoid}
+</style>`;
+const PB = '<div class="html2pdf__page-break"></div>';
+const rHead = (title, sub) => `<div class="rp-head"><div class="rp-brand">월급 루틴</div><h1>${title}</h1><div class="rp-meta">${sub ? sub + ' · ' : ''}출력 ${fmtDateTime(new Date().toISOString())} · v${APP_VERSION}</div></div>`;
+const kv = arr => `<div class="kv">${arr.map(([k, v]) => `<div><span>${k}</span><b>${v}</b></div>`).join('')}</div>`;
+function reportPlan(){
+  const sal = state.salary, tot = planTotal();
+  const rows = state.categories.map(c => `<tr><td><span class="dot" style="background:${c.color}"></span><b>${esc(c.name || '이름 없음')}</b>${c.isSaving ? ' <span class="faint">(저축)</span>' : ''}</td><td>${c.type === 'multi' ? '여러 항목' : '금액 하나'}</td><td class="n"><b>${won(catTotal(c))}</b></td><td class="n">${sal ? pct(catTotal(c) / sal * 100) : '-'}</td></tr>`
+    + (c.type === 'multi' ? c.items.map(it => `<tr class="sub"><td>${esc(it.name || '이름 없음')}</td><td></td><td class="n">${won(it.amount)}</td><td class="n">${sal ? pct(it.amount / sal * 100) : ''}</td></tr>`).join('') : '')).join('');
+  return `${rHead('월급 배분 계획')}${kv([['월급', won(sal)], ['배분 합계', won(tot)], ['남은 돈', signWon(sal - tot)], ['저축 합계', won(planSaving())]])}
+    <h2>카테고리별 배분</h2><table><thead><tr><th>카테고리 / 항목</th><th>형식</th><th class="n">금액</th><th class="n">비율</th></tr></thead><tbody>${rows || '<tr><td colspan="4" class="faint">카테고리가 없어요</td></tr>'}</tbody>
+    <tfoot><tr><td>합계</td><td></td><td class="n">${won(tot)}</td><td class="n">${sal ? pct(tot / sal * 100) : '-'}</td></tr></tfoot></table>`;
+}
+function reportGuide(){
+  return `${rHead('비율 가이드')}${kv([['기준 월급', won(guideSal())], ['비율 합계', ruleSum() + '%']])}
+    <h2>비율별 금액</h2><table><thead><tr><th>이름</th><th class="n">비율</th><th class="n">가이드 금액</th><th class="n">지금 계획</th></tr></thead><tbody>${state.rules.map(r => {
+      const c = state.categories.find(k => k.name.trim() === r.name.trim() && r.name.trim());
+      return `<tr><td>${esc(r.name || '이름 없음')}</td><td class="n">${r.percent}%</td><td class="n"><b>${won(ruleAmount(r))}</b></td><td class="n">${c ? won(catTotal(c)) : '<span class="faint">없음</span>'}</td></tr>`;
+    }).join('')}</tbody></table>`;
+}
+function projTable(){
+  const pb = projBase(), P = state.projection.startBalance, rate = state.projection.rate, now = new Date();
+  return `<table><thead><tr><th>기간</th><th>시점</th><th class="n">원금</th><th class="n">이자</th><th class="n">합계</th></tr></thead><tbody>${[1, 2, 3].map(n => {
+    const r = fv(P, pb.m, rate, n * 12);
+    return `<tr><td>${n}년 후</td><td>${now.getFullYear() + n}년 ${now.getMonth() + 1}월</td><td class="n">${won(r.principal)}</td><td class="n">${won(r.interest)}</td><td class="n"><b>${won(r.total)}</b></td></tr>`;
+  }).join('')}</tbody></table>`;
+}
+function reportProj(){
+  const pb = projBase(), p = state.projection;
+  const src = pb.src === 'actual' ? `월별 기록 ${pb.n}개월 평균` : '월급 배분 계획';
+  return `${rHead('저축 전망')}${kv([['매달 저축', won(pb.m)], ['기준', src], ['지금까지 모은 금액', won(p.startBalance)], ['연 이율', p.rate ? p.rate + '%' : '없음']])}
+    <h2>저축 카테고리</h2><p>${state.categories.filter(c => c.isSaving).map(c => esc(c.name)).join(', ') || '<span class="faint">없음</span>'}</p>
+    <h2>기간별 예상 금액</h2>${projTable()}<p class="faint">이율은 월복리·세전 기준의 단순 계산이에요.</p>`;
+}
+function yearTable(y){
+  const ys = yearSummary(y);
+  return `<table><thead><tr><th>월</th><th class="n">월급</th><th class="n">기록 합계</th><th class="n">저축</th><th class="n">남은 돈</th></tr></thead><tbody>${ys.per.map(p =>
+    `<tr><td>${p.m}월</td><td class="n">${p.salary ? won(p.salary) : '-'}</td><td class="n">${p.has ? won(p.total) : '-'}</td><td class="n">${p.has ? won(p.saving) : '-'}</td><td class="n">${p.has && p.salary ? signWon(p.salary - p.total) : '-'}</td></tr>`).join('')}</tbody>
+    <tfoot><tr><td>합계</td><td class="n">${won(ys.sal)}</td><td class="n">${won(ys.tot)}</td><td class="n">${won(ys.sav)}</td><td class="n">${signWon(ys.sal - ys.tot)}</td></tr></tfoot></table>`;
+}
+function reportYear(y, withMonths){
+  const ys = yearSummary(y);
+  let html = `${rHead(`${y}년 월별 기록`)}${kv([['기록한 달', ys.months + '개월'], ['총 월급', won(ys.sal)], ['총 저축', won(ys.sav)], ['월 평균 저축', ys.months ? won(ys.sav / ys.months) : '-']])}<h2>월별 요약</h2>${yearTable(y)}`;
+  if (withMonths) ys.per.filter(p => p.has).forEach(p => { html += PB + reportMonth(y, p.m); });
+  return html;
+}
+function reportMonth(y, m){
+  const md = peekMonth(y, m) || { salary: 0, entries: [], memo: '' };
+  const t = monthTotal(md);
+  const savedMonth = view.month, savedYear = view.year; view.year = y; view.month = m;
+  const cmp = monthCompareRows(getMonth(y, m)); view.year = savedYear; view.month = savedMonth;
+  return `${rHead(`${y}년 ${m}월 기록`)}${kv([['실제 월급', won(md.salary)], ['기록 합계', won(t)], ['남은 돈', md.salary ? signWon(md.salary - t) : '-'], ['저축', won(monthSaving(md))]])}
+    <h2>실제 기록 (${md.entries.length}건)</h2><table><thead><tr><th>카테고리</th><th>항목</th><th class="n">금액</th><th>메모</th></tr></thead><tbody>${md.entries.map(e => {
+      const c = cat(e.catId);
+      return `<tr><td><span class="dot" style="background:${c?.color || '#D1D6DB'}"></span>${esc(c?.name || '미분류')}</td><td>${esc(e.name)}</td><td class="n">${won(e.amount)}</td><td>${esc(e.memo)}</td></tr>`;
+    }).join('') || '<tr><td colspan="4" class="faint">기록이 없어요</td></tr>'}</tbody><tfoot><tr><td>합계</td><td></td><td class="n">${won(t)}</td><td></td></tr></tfoot></table>
+    <h2>계획 대비</h2><table><thead><tr><th>카테고리</th><th class="n">계획</th><th class="n">실제</th><th class="n">차이</th></tr></thead><tbody>${cmp.map(r => `<tr><td><span class="dot" style="background:${r.color}"></span>${esc(r.name)}</td><td class="n">${won(r.plan)}</td><td class="n">${won(r.act)}</td><td class="n">${signWon(r.act - r.plan)}</td></tr>`).join('')}</tbody></table>
+    ${md.memo ? `<h2>메모</h2><div class="memo">${esc(md.memo)}</div>` : ''}`;
+}
+function reportDash(){
+  const now = new Date(), y = now.getFullYear(), m = now.getMonth() + 1, md = peekMonth(y, m);
+  const sal = md?.salary || state.salary, t = monthTotal(md), planT = planTotal(), ys = yearSummary(y), planS = planSaving();
+  return `${rHead('현재 상황', `${y}년 ${m}월 기준`)}
+    <h2>이번 달</h2>${kv([[md?.salary ? '실제 월급' : '계획 월급', won(sal)], ['기록 합계', won(t)], ['남은 돈', signWon(sal - t)], ['저축 기록', won(monthSaving(md))]])}
+    <h2>월급 배분 계획</h2>${kv([['월급', won(state.salary)], ['배분 합계', won(planT)], ['남은 돈', signWon(state.salary - planT)], ['저축', won(planS)]])}
+    <table><thead><tr><th>카테고리</th><th class="n">금액</th><th class="n">비율</th></tr></thead><tbody>${state.categories.map(c => `<tr><td><span class="dot" style="background:${c.color}"></span>${esc(c.name || '이름 없음')}</td><td class="n">${won(catTotal(c))}</td><td class="n">${state.salary ? pct(catTotal(c) / state.salary * 100) : '-'}</td></tr>`).join('')}</tbody></table>
+    <h2>${y}년 누적</h2>${kv([['기록한 달', ys.months + ' / 12개월'], ['총 월급', won(ys.sal)], ['총 저축', won(ys.sav)], ['계획 대비 저축', planS && ys.months ? pct(ys.sav / (planS * ys.months) * 100) : '-']])}${yearTable(y)}
+    <h2>저축 전망</h2>${projTable()}`;
+}
+function reportAll(){ return [reportDash(), reportPlan(), reportGuide(), reportProj(), reportYear(view.year, true)].join(PB); }
+function exportByWhat(what){
+  const d = stampFile().slice(0, 10);
+  const map = {
+    dash: [reportDash, '현황'], plan: [reportPlan, '월급배분'], guide: [reportGuide, '비율가이드'], proj: [reportProj, '저축전망'],
+    year: [() => reportYear(view.year, true), `${view.year}년_월별기록`],
+    month: [() => reportMonth(view.year, view.month), `${view.year}년${view.month}월_기록`],
+    all: [reportAll, '전체리포트']
+  };
+  const [fn, label] = map[what] || map.all;
+  flush();
+  exportPDF(fn(), `월급루틴_${label}_${d}.pdf`);
+}
+let pdfBusy = false;
+async function exportPDF(inner, filename){
+  if (pdfBusy) return; pdfBusy = true;
+  const html = `<div class="rp">${RCSS}${inner}</div>`;
+  toast('PDF 만드는 중…');
+  try {
+    if (document.fonts?.ready) await document.fonts.ready;
+    if (!window.html2pdf) throw new Error('html2pdf 없음');
+    await window.html2pdf().set({
+      margin: [12, 10, 12, 10], filename,
+      image: { type: 'jpeg', quality: 0.96 },
+      html2canvas: { scale: 2, useCORS: true, backgroundColor: '#ffffff' },
+      jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
+      pagebreak: { mode: ['css', 'legacy'], avoid: ['tr', '.kv'] }
+    }).from(html).save();
+    toast('PDF를 저장했어요');
+  } catch (e) {
+    console.warn(e); printFallback(html, filename);
+  } finally { pdfBusy = false; }
+}
+function printFallback(html, title){
+  const w = window.open('', '_blank');
+  if (!w){ alertBox('PDF를 만들지 못했어요', '<p>인터넷 연결을 확인하거나, 팝업을 허용한 뒤 다시 시도해 주세요.</p>'); return; }
+  w.document.write(`<!doctype html><html lang="ko"><head><meta charset="utf-8"><title>${esc(title)}</title><link rel="stylesheet" href="${FONT_URL}"><style>@page{size:A4;margin:12mm 10mm}body{margin:0;background:#fff}.html2pdf__page-break{page-break-before:always}</style></head><body>${html}<script>window.onload=function(){setTimeout(function(){window.print()},500)}<\/script></body></html>`);
+  w.document.close();
+  toast('인쇄 창에서 ‘PDF로 저장’을 선택하세요');
+}
+
+/* ===== 버전 확인 ===== */
+const changelogHTML = list => `<ul class="changelog">${list.map(c => `<li><b>v${c.v}</b> <span class="faint">${c.date}</span><ul>${c.notes.map(n => `<li>${esc(n)}</li>`).join('')}</ul></li>`).join('')}</ul>`;
+function checkLocalVersion(){
+  let last = null;
+  try { last = localStorage.getItem(VER_KEY); localStorage.setItem(VER_KEY, APP_VERSION); } catch (e) {}
+  if (last && cmpVer(APP_VERSION, last) > 0){
+    const notes = CHANGELOG.filter(c => cmpVer(c.v, last) > 0);
+    modal({ title: `v${APP_VERSION}로 업데이트됐어요`, html: `<p class="faint">v${esc(last)} → v${APP_VERSION} · 데이터는 그대로 있어요</p>${changelogHTML(notes)}`, buttons: [{ label: '확인', cls: 'primary', value: true }] });
+  }
+}
+let lastRemote = 0, remoteShown = null;
+async function checkRemote(manual){
+  lastRemote = Date.now();
+  if (!/^https?:$/.test(location.protocol)){
+    if (manual) alertBox('업데이트 확인', '<p>파일을 직접 열었을 때는 확인할 수 없어요.</p><p class="faint">GitHub Pages 등 웹에 올려 두면 새 버전을 자동으로 확인해요.</p>');
+    return;
+  }
+  try {
+    const r = await fetch(location.origin + location.pathname + '?_v=' + Date.now(), { cache: 'no-store' });
+    const mm = (await r.text()).match(/APP_VERSION\s*=\s*['"]([\d.]+)['"]/);
+    if (!mm){ if (manual) toast('버전 정보를 찾지 못했어요'); return; }
+    const latest = mm[1];
+    if (cmpVer(latest, APP_VERSION) > 0){
+      if (!manual && remoteShown === latest) return;
+      remoteShown = latest; flush();
+      const ok = await modal({ title: '새 버전이 있어요', html: `<p>v${APP_VERSION} → <b>v${esc(latest)}</b></p><p class="faint">업데이트해도 저장된 데이터는 그대로 유지돼요.</p>`, buttons: [{ label: '나중에', value: false }, { label: '지금 업데이트', cls: 'primary', value: true }] });
+      if (ok) location.replace(location.origin + location.pathname + '?v=' + latest + '-' + Date.now());
+    } else if (manual) toast(`최신 버전이에요 (v${APP_VERSION})`);
+  } catch (e) { if (manual) toast('업데이트를 확인하지 못했어요'); }
+}
+
+/* ===== 이벤트 ===== */
+document.addEventListener('click', async e => {
+  const t = e.target.closest('[data-tab],[data-act]'); if (!t || t.disabled) return;
+  if (t.dataset.tab){ go(t.dataset.tab); return; }
+  const fn = ACT[t.dataset.act]; if (fn) await fn(t.dataset, t);
+});
+document.addEventListener('input', e => {
+  const el = e.target; if (!el.dataset?.bind) return;
+  if (el.classList.contains('money')) liveFormat(el);
+  setBound(el);
+});
+document.addEventListener('change', e => {
+  const el = e.target;
+  if (el.dataset?.change){ CHG[el.dataset.change]?.(el); return; }
+  if (el.dataset?.bind && (el.type === 'checkbox' || el.tagName === 'SELECT')){ setBound(el); if (el.dataset.bind.startsWith('entry.catId')) render(); }
+});
+document.addEventListener('keydown', e => {
+  if (e.key === 'Enter' && e.target.matches?.('input.money, input.txt, .pinput input, .name-in')) e.target.blur();
+});
+$('#importFile').addEventListener('change', async e => {
+  const f = e.target.files[0]; e.target.value = ''; if (!f) return;
+  try {
+    const obj = JSON.parse(await f.text());
+    const d = obj && obj.data ? obj.data : obj;
+    if (!d || !Array.isArray(d.categories)) throw new Error('형식 오류');
+    const ok = await modal({ title: '데이터를 가져올까요?', html: `<p>지금 데이터가 이 파일의 내용으로 <b>바뀌어요</b>.</p><p class="faint" style="font-size:13px">파일: ${esc(f.name)}<br>백업 시점: ${obj.exportedAt ? fmtDateTime(obj.exportedAt) : '알 수 없음'}</p><p class="faint" style="font-size:13px">걱정되면 먼저 지금 데이터를 내보내 두세요.</p>`, buttons: [{ label: '취소', value: false }, { label: '가져오기', cls: 'primary', value: true }] });
+    if (!ok) return;
+    state = migrate(d); ui.openOpts.clear(); view.month = null; saveView(); saveNow(); render(); toast('데이터를 가져왔어요');
+  } catch (err) {
+    alertBox('가져오지 못했어요', '<p>월급 루틴에서 내보낸 JSON 파일인지 확인해 주세요.</p>');
+  }
+});
+window.addEventListener('storage', e => {
+  if (e.key === STORE_KEY && e.newValue){ try { state = migrate(JSON.parse(e.newValue)); render(); setStamp('saved'); toast('다른 창에서 바뀐 내용을 불러왔어요'); } catch (_) {} }
+});
+window.addEventListener('beforeunload', flush);
+window.addEventListener('pagehide', flush);
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') flush();
+  else if (Date.now() - lastRemote > 10 * 60 * 1000) checkRemote(false);
+});
+
+/* ===== 시작 ===== */
+$('#verBadge').textContent = 'v' + APP_VERSION;
+$('#footVer').textContent = 'v' + APP_VERSION;
+const hdr = $('#top');
+const setHH = () => document.documentElement.style.setProperty('--hh', hdr.offsetHeight + 'px');
+if ('ResizeObserver' in window) new ResizeObserver(setHH).observe(hdr); else setHH();
+if (firstRun) saveNow();
+render(); setStamp('saved');
+checkLocalVersion();
+setTimeout(() => checkRemote(false), 1500);
+setInterval(() => checkRemote(false), 30 * 60 * 1000);
+})();
+</script>
+</body>
+</html>
